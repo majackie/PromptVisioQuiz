@@ -12,11 +12,14 @@
 <body>
   <div class="container">
     <h1>PromptVisioQuiz</h1>
-    <p>
-      <button id="generateButton">Generate Model</button>
-      <button id="questionaireButton">Create Questions</button>
-    </p>
-    <div id="dataContainer"></div>
+    <form id="loginForm">
+      <label for="username">Username:</label><br>
+      <input type="text" id="username" name="username" required><br>
+      <label for="password">Password:</label><br>
+      <input type="password" id="password" name="password" required><br><br>
+      <input type="submit" value="Login">
+      <button id="logoutButton">Logout</button>
+    </form>
   </div>
 </body>
 

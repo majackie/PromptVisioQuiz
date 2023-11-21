@@ -4,14 +4,13 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const path = require('path');
-const fs = require('fs');
 const { spawn } = require('child_process');
 
 app.use(cors());
-
+app.use(express.json());
 let isModelRunning = false;
 
-app.get('/model', (req, res) => {
+app.get('/model', async (req, res) => {
   if (isModelRunning) {
     res.status(429).send('Model is currently running, please try again later');
     return;
@@ -19,21 +18,31 @@ app.get('/model', (req, res) => {
 
   isModelRunning = true;
 
-  const python = spawn('python', ['model.py']);
+  try {
+    const python = spawn('python', ['model.py']);
 
-  python.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`);
-  });
+    python.stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
+    });
 
-  python.stderr.on('data', (data) => {
-    console.error(`stderr: ${data}`);
-  });
+    python.stderr.on('data', (data) => {
+      console.error(`stderr: ${data}`);
+    });
 
-  python.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
-    isModelRunning = false;
+    await new Promise((resolve, reject) => {
+      python.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+        isModelRunning = false;
+        resolve();
+      });
+    });
+
     res.send('Model finished running');
-  });
+  } catch (error) {
+    console.error('Error running the model:', error);
+    isModelRunning = false;
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 app.get('/titles', (req, res, next) => {
@@ -74,6 +83,16 @@ app.get('/image', (req, res, next) => {
       console.log('Sent:', fileName);
     }
   });
+});
+
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === 'admin' && password === '111') {
+    res.cookie('token', '123456', { httpOnly: true, maxAge: 60 * 1000 });
+    res.json({ message: 'Logged in successfully' });
+  } else {
+    res.status(401).json({ message: 'Unauthorized' });
+  }
 });
 
 app.listen(process.env.PORT || 3000, () => {
