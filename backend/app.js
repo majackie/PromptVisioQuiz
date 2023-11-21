@@ -85,13 +85,18 @@ app.get('/image', (req, res, next) => {
   });
 });
 
+let users = [
+  { username: 'admin', password: '111' },
+  { username: 'amir', password: '123' }
+];
+
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
-  if (username === 'admin' && password === '111') {
-    res.cookie('token', '123456', { httpOnly: true, maxAge: 60 * 1000 });
-    res.json({ message: 'Logged in successfully' });
+  const user = users.find(u => u.username === username && u.password === password);
+  if (user) {
+    res.json({ success: true });
   } else {
-    res.status(401).json({ message: 'Unauthorized' });
+    res.status(401).json({ success: false });
   }
 });
 

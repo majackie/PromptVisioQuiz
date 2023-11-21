@@ -11,9 +11,6 @@ document.getElementById('generateButton').addEventListener('click', function () 
   .then(response => response.text())
   .then(message => {
     console.log(message);
-    // If you want to display the message in your HTML, you can do so here.
-    // For example, if you have a div with id 'message', you can do:
-    // document.getElementById('message').textContent = message;
   })
   .catch(error => {
     console.error('Error:', error);
@@ -80,9 +77,6 @@ document.getElementById('questionaireButton').addEventListener('click', function
 });
 
 document.getElementById('logoutButton').addEventListener('click', function() {
-  // Remove 'isLoggedIn' from localStorage
   localStorage.removeItem('isLoggedIn');
-  
-  // Redirect to the login page
   window.location.href = 'index.html';
 });
