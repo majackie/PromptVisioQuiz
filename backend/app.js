@@ -1,8 +1,11 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const path = require('path');
 const fs = require('fs');
 const { spawn } = require('child_process');
+
+app.use(cors());
 
 let isModelRunning = false;
 
