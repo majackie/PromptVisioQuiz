@@ -85,19 +85,24 @@ app.get('/image', (req, res, next) => {
   });
 });
 
-let users = [
-  { username: 'admin', password: '111' },
-  { username: 'amir', password: '123' }
-];
+const pg = require('pg');
+const connectionString = 'postgres://jhopzrtf:b-nf0oXf2Ric1psA4CC1i5haLzeKeLsZ@bubble.db.elephantsql.com/jhopzrtf';
+const client = new pg.Client(connectionString);
+client.connect();
 
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
-  const user = users.find(u => u.username === username && u.password === password);
-  if (user) {
-    res.json({ success: true });
-  } else {
-    res.status(401).json({ success: false });
-  }
+
+  client.query('SELECT password = crypt($1, password) AS password_matches FROM users WHERE username = $2', [password, username], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ success: false });
+    } else if (result.rows.length > 0 && result.rows[0].password_matches) {
+      res.json({ success: true });
+    } else {
+      res.status(401).json({ success: false });
+    }
+  });
 });
 
 app.listen(process.env.PORT || 3000, () => {
