@@ -24,11 +24,13 @@ url = "https://www.cbc.ca/webfeed/rss/rss-canada-britishcolumbia"
 rss_titles = get_rss_titles(url)
 random_titles = random.sample(rss_titles, 4)
 
+image_path = "images/result.png"
 image = generate_image(random_titles[0])
-image.save("images/result.png")
+image.save(image_path)
 
 data = {
-    "titles": random_titles
+    "titles": random_titles,
+    "image_path": image_path
 }
 with open('data.json', 'w') as f:
     json.dump(data, f)

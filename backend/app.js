@@ -32,6 +32,7 @@ app.get('/model', (req, res) => {
   python.on('close', (code) => {
     console.log(`child process exited with code ${code}`);
     isModelRunning = false;
+    res.send('Model finished running');
   });
 });
 

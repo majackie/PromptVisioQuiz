@@ -3,23 +3,35 @@
 const url = 'http://localhost:3000';
 
 document.getElementById('generateButton').addEventListener('click', function () {
+  fetch(url + '/model')
+  .then(response => response.text())
+  .then(message => {
+    console.log(message);
+    // If you want to display the message in your HTML, you can do so here.
+    // For example, if you have a div with id 'message', you can do:
+    // document.getElementById('message').textContent = message;
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+});
+
+document.getElementById('questionaireButton').addEventListener('click', function () {
   fetch(url + '/data')
     .then(response => response.json())
     .then(data => {
+      const br = document.createElement('br');
       const dataContainer = document.getElementById('dataContainer');
       dataContainer.innerHTML = '';
 
-      const br = document.createElement('br');
-
       const img = document.createElement('img');
-      img.src = url + '/images/result.png';
+      img.src = url + "/" + data.image_path;
       dataContainer.appendChild(img);
       dataContainer.appendChild(br);
 
       const solutionTitle = data.titles[0];
 
       data.titles.sort(() => Math.random() - 0.5);
-
       data.titles.forEach((item, index) => {
         const number = index + 1;
 
@@ -33,8 +45,7 @@ document.getElementById('generateButton').addEventListener('click', function () 
         label.textContent = `${number}) ${item}`;
         dataContainer.appendChild(label);
 
-        const br = document.createElement('br');
-        dataContainer.appendChild(br);
+        dataContainer.appendChild(br.cloneNode());
       });
 
       const button = document.createElement('button');
@@ -45,9 +56,8 @@ document.getElementById('generateButton').addEventListener('click', function () 
       result.id = 'resultMessage';
       dataContainer.appendChild(result);
 
-      button.addEventListener('click', function() {
+      button.addEventListener('click', function () {
         const selectedRadio = document.querySelector('input[name="title"]:checked');
-        
         if (selectedRadio) {
           const selectedTitle = selectedRadio.value;
           const resultMessage = document.getElementById('resultMessage');
