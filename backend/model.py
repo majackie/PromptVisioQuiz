@@ -5,6 +5,7 @@ import torch
 import feedparser
 import random
 import json
+import os
 
 def get_rss_titles(url):
     titles = []
@@ -24,13 +25,19 @@ url = "https://www.cbc.ca/webfeed/rss/rss-canada-britishcolumbia"
 rss_titles = get_rss_titles(url)
 random_titles = random.sample(rss_titles, 4)
 
-image_path = "images/result.png"
-image = generate_image(random_titles[0])
-image.save(image_path)
+dir_path = "results"
+os.makedirs(dir_path, exist_ok=True)
+image_path = dir_path + "/image.png"
+data_path = dir_path + "/titles.json"
+
+try:
+    image = generate_image(random_titles[0])
+    image.save(image_path)
+except FileNotFoundError as e:
+    print(e)
 
 data = {
-    "titles": random_titles,
-    "image_path": image_path
+    "titles": random_titles
 }
-with open('data.json', 'w') as f:
+with open(data_path, 'w') as f:
     json.dump(data, f)

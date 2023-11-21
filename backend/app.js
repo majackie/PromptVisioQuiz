@@ -36,25 +36,45 @@ app.get('/model', (req, res) => {
   });
 });
 
-app.get('/data', (req, res) => {
-  fs.readFile('data.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading file from disk:', err);
-      res.status(500).send('Error reading file');
-      return;
+app.get('/titles', (req, res, next) => {
+  const options = {
+    root: path.join(__dirname, 'results'),
+    dotfiles: 'deny',
+    headers: {
+      'x-timestamp': Date.now(),
+      'x-sent': true
     }
+  };
 
-    try {
-      const jsonData = JSON.parse(data);
-      res.json(jsonData);
-    } catch(e) {
-      console.error('Error parsing JSON string:', e);
-      res.status(500).send('Error parsing JSON string');
+  const fileName = 'titles.json';
+  res.sendFile(fileName, options, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      console.log('Sent:', fileName);
     }
   });
 });
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.get('/image', (req, res, next) => {
+  const options = {
+    root: path.join(__dirname, 'results'),
+    dotfiles: 'deny',
+    headers: {
+      'x-timestamp': Date.now(),
+      'x-sent': true
+    }
+  };
+
+  const fileName = 'image.png';
+  res.sendFile(fileName, options, function (err) {
+    if (err) {
+      next(err);
+    } else {
+      console.log('Sent:', fileName);
+    }
+  });
+});
 
 app.listen(process.env.PORT || 3000, () => {
   console.log('Server is running on port ' + (process.env.PORT || 3000));

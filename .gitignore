@@ -129,5 +129,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-backend/images/result.png
-backend/data.json
+backend/results

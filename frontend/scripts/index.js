@@ -17,7 +17,7 @@ document.getElementById('generateButton').addEventListener('click', function () 
 });
 
 document.getElementById('questionaireButton').addEventListener('click', function () {
-  fetch(url + '/data')
+  fetch(url + '/titles')
     .then(response => response.json())
     .then(data => {
       const br = document.createElement('br');
@@ -25,7 +25,7 @@ document.getElementById('questionaireButton').addEventListener('click', function
       dataContainer.innerHTML = '';
 
       const img = document.createElement('img');
-      img.src = url + "/" + data.image_path;
+      img.src = url + '/image';
       dataContainer.appendChild(img);
       dataContainer.appendChild(br);
 
