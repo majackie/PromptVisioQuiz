@@ -1,3 +1,5 @@
+# ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
+
 from diffusers import StableDiffusionPipeline
 import torch
 import feedparser

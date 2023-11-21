@@ -1,3 +1,5 @@
+// ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
+
 const url = 'http://localhost:3000';
 
 document.getElementById('generateButton').addEventListener('click', function () {
