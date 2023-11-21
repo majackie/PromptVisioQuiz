@@ -7,6 +7,7 @@ import random
 import json
 import os
 
+
 def get_rss_titles(url):
     titles = []
     feed = feedparser.parse(url)
@@ -14,12 +15,14 @@ def get_rss_titles(url):
         titles.append(entry.title)
     return titles
 
+
 def generate_image(prompt):
     model_id = "runwayml/stable-diffusion-v1-5"
     pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
     pipe = pipe.to("cuda")
     image = pipe(prompt).images[0]
     return image
+
 
 url = "https://www.cbc.ca/webfeed/rss/rss-canada-britishcolumbia"
 rss_titles = get_rss_titles(url)
@@ -36,8 +39,6 @@ try:
 except FileNotFoundError as e:
     print(e)
 
-data = {
-    "titles": random_titles
-}
-with open(data_path, 'w') as f:
+data = {"titles": random_titles}
+with open(data_path, "w") as f:
     json.dump(data, f)

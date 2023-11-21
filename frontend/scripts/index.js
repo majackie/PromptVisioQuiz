@@ -41,3 +41,8 @@ document.getElementById('logoutButton').addEventListener('click', function () {
     // Redirect to the login page
     window.location.href = 'index.html';
 });
+
+document.getElementById('registerButton').addEventListener('click', function (event) {
+    event.preventDefault();
+    window.location.href = 'register.html';
+});
