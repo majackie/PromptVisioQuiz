@@ -4,7 +4,7 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
     window.location.href = 'model.html';
 }
 
-const url = 'http://localhost:3000';
+const url = 'https://promptvisioquiz.onrender.com';
 
 document.getElementById('registerForm').addEventListener('submit', function (event) {
     event.preventDefault();
