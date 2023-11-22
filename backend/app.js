@@ -29,7 +29,7 @@ app.get('/model', async (req, res) => {
     isModelRunning = true;
 
     try {
-        const python = spawn('python', ['model.py']);
+        const python = spawn('python3', ['model_api.py']);
 
         python.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);

@@ -13,7 +13,7 @@
         "nodemon": "^2.0.22"
     },
     "scripts": {
-        "start": "node backend/app.js",
-        "dev": "nodemon backend/app.js"
+        "start": "node app.js",
+        "dev": "nodemon app.js"
     }
 }
