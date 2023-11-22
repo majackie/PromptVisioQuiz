@@ -1,21 +1,27 @@
-# Stage 1: Node.js
-FROM node:20 AS build
+# Start with a base image that has Python 3.11.
+FROM python:3.11
 
-WORKDIR /app
+# Create app directory in the Docker image.
+WORKDIR /usr/src/app
 
+# Copy the Python requirements file.
+COPY requirements.txt ./
+
+# Install Python dependencies.
+RUN pip install -r requirements.txt
+
+# Install Node.js and npm.
+RUN apt-get update && apt-get install -y nodejs npm
+
+# Copy the Node.js package files and install Node.js dependencies.
 COPY package*.json ./
-
 RUN npm install
 
+# Copy the rest of your application's code.
 COPY . .
 
-# Stage 2: Python
-FROM python:3.11-slim-buster
+# Expose port 3000.
+EXPOSE 3000
 
-WORKDIR /app
-
-COPY --from=build /app .
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-CMD ["node", "app.js"]
+# Set the start command.
+CMD [ "npm", "start" ]
