@@ -13,8 +13,7 @@
         "nodemon": "^2.0.22"
     },
     "scripts": {
-        "install": "npm install && pip -r requirements.txt",
-        "start": "node app.js",
+        "start": "node app.js && pip -r requirements.txt",
         "dev": "nodemon app.js"
     }
 }
