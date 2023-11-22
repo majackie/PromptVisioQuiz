@@ -14,7 +14,7 @@
     },
     "scripts": {
         "install": "npm install && pip -r requirements.txt",
-        "start": "node app.js && pip -r requirements.txt",
+        "start": "node app.js",
         "dev": "nodemon app.js"
     }
 }
