@@ -6,7 +6,7 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
     window.location.href = 'questionaire.html';
 }
 
-// Define the base URL for the API
+// Base URL for the API
 const url = 'https://promptvisioquiz.azurewebsites.net';
 
 // Add an event listener for the login form submission
