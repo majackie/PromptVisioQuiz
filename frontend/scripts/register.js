@@ -3,7 +3,7 @@
 // Check if the user is already logged in
 if (localStorage.getItem('isLoggedIn') === 'true') {
     // If so, redirect to the model page
-    window.location.href = 'model.html';
+    window.location.href = 'questionaire.html';
 }
 
 // Base URL for the API

@@ -3,7 +3,7 @@
 // Check if the user is already logged in
 if (localStorage.getItem('isLoggedIn') === 'true') {
     // If so, redirect them to the model page
-    window.location.href = 'model.html';
+    window.location.href = 'questionaire.html';
 }
 
 // Define the base URL for the API
@@ -35,10 +35,34 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             return response.json();
         })
         .then(data => {
-            // If the login was successful, set 'isLoggedIn' to true in localStorage
-            localStorage.setItem('isLoggedIn', 'true');
-            // And redirect the user to the model page
-            window.location.href = 'model.html';
+            // Create a new h2 element
+            var h2 = document.createElement('h2');
+
+            // If the login was successful
+            if (data.success) {
+                // Update the h2 text to 'Correct'
+                h2.textContent = 'Correct';
+
+                // If the login was successful, set 'isLoggedIn' to true in localStorage
+                localStorage.setItem('isLoggedIn', 'true');
+                if (data.role == "admin") {
+                    // Set role to 'admin' in localStorage
+                    localStorage.setItem('role', 'admin');
+                    // Redirect admin to the admin page
+                    window.location.href = 'admin.html';
+                } else {
+                    // Set role to 'user' in localStorage
+                    localStorage.setItem('role', 'user');
+                    // Redirect user to the model page
+                    window.location.href = 'questionaire.html';
+                }
+            } else {
+                // Update the h2 text to 'Incorrect'
+                h2.textContent = 'Incorrect';
+            }
+
+            // Append the h2 element to the body
+            document.body.appendChild(h2);
         })
         .catch((error) => {
             // If there was an error, log it to the console
