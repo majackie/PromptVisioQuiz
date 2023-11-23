@@ -114,14 +114,14 @@ app.get('/image', (req, res, next) => {
 // Route for login
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-    // Query to check if the password matches the one in the database
-    pool.query('SELECT password = crypt($1, password) AS password_matches FROM users WHERE username = $2', [password, username], (err, result) => {
+    // Query to check if the password matches the one in the database and get the role
+    pool.query('SELECT password = crypt($1, password) AS password_matches, role FROM users WHERE username = $2', [password, username], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).json({ success: false });
         } else if (result.rows.length > 0 && result.rows[0].password_matches) {
-            // If the password matches, send success
-            res.json({ success: true });
+            // If the password matches, send success and the role
+            res.json({ success: true, role: result.rows[0].role });
         } else {
             // If the password doesn't match, send failure
             res.status(401).json({ success: false });
@@ -132,6 +132,10 @@ app.post('/login', (req, res) => {
 // Route for registration
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
+    const role = 'user'; // default role for new users
+    const correct = 0; // default correct for new users
+    const incorrect = 0; // default incorrect for new users
+
     // Query to check if the username already exists
     pool.query('SELECT * FROM users WHERE username = $1', [username], (err, result) => {
         if (err) {
@@ -142,7 +146,7 @@ app.post('/register', (req, res) => {
             res.json({ success: false });
         } else {
             // If the username doesn't exist, create a new user
-            pool.query('INSERT INTO users (username, password) VALUES ($1, crypt($2, gen_salt(\'bf\')))', [username, password], (err, result) => {
+            pool.query('INSERT INTO users (username, password, role, correct, incorrect) VALUES ($1, crypt($2, gen_salt(\'bf\')), $3, $4, $5)', [username, password, role, correct, incorrect], (err, result) => {
                 if (err) {
                     console.error(err);
                     res.status(500).json({ success: false });
