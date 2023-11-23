@@ -7,7 +7,7 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
 }
 
 // Base URL for the API
-const url = 'https://promptvisioquiz.azurewebsites.net';
+const url = 'https://promptvisioquiz.onrender.com';
 
 // Add an event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {
