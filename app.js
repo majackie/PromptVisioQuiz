@@ -36,7 +36,7 @@ app.get('/model', async (req, res) => {
 
     try {
         // Spawn a child process to run the Python script
-        const python = spawn('python3', ['model_api.py']);
+        const python = spawn('python', ['model_local.py']);
 
         // Log stdout and stderr from the Python script
         python.stdout.on('data', (data) => {
