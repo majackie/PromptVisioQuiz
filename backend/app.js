@@ -163,8 +163,8 @@ app.post('/register', (req, res) => {
 
 // Read the certificate files
 const options = {
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem'),
+    key: fs.readFileSync('certificates/key.pem'),
+    cert: fs.readFileSync('certificates/cert.pem'),
     passphrase: '55699'
 };
 
