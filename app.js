@@ -7,6 +7,8 @@ const app = express();
 const path = require('path');
 const { spawn } = require('child_process');
 const pg = require('pg');
+const https = require('https');
+const fs = require('fs');
 
 // Set up PostgreSQL connection
 const pool = new pg.Pool({
@@ -159,7 +161,14 @@ app.post('/register', (req, res) => {
     });
 });
 
-// Start the server
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is running on port ' + (process.env.PORT || 3000));
+// Read the certificate files
+const options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem'),
+    passphrase: '55699'
+};
+
+// Create the HTTPS server
+https.createServer(options, app).listen(55699, () => {
+    console.log('Server is running on port 55699');
 });
