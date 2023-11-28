@@ -52,91 +52,157 @@ const verifyToken = (req, res, next) => {
 
 
 // Route to run the model
-app.get('/model', async (req, res) => {
-    // Check if model is already running
-    if (isModelRunning) {
-        res.status(429).send('Model is currently running, please try again later');
-        return;
-    }
+app.get('/model', (req, res) => {
+    const rawCookies = req.headers.cookie || '';
 
-    isModelRunning = true;
+    // Parse the cookie header to get individual cookies
+    const cookies = rawCookies.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+    }, {});
 
-    try {
-        // Spawn a child process to run the Python script
-        const python = spawn('python', ['model_local.py']);
+    const token = cookies['token']; // Replace 'token' with the actual name of your token
 
-        // Log stdout and stderr from the Python script
-        python.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
-        python.stderr.on('data', (data) => {
-            console.error(`stderr: ${data}`);
-        });
-
-        // Wait for the Python script to finish
-        await new Promise((resolve, reject) => {
-            python.on('close', (code) => {
-                console.log(`child process exited with code ${code}`);
-                isModelRunning = false;
-                resolve();
-            });
-        });
-
-        // Send response when the model finishes running
-        res.send('Model finished running');
-    } catch (error) {
-        // Handle errors
-        console.error('Error running the model:', error);
-        isModelRunning = false;
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-// Route to get titles
-app.get('/titles', (req, res, next) => {
-    // Options for sending the file
-    const options = {
-        root: path.join(__dirname, 'results'),
-        dotfiles: 'deny',
-        headers: {
-            'x-timestamp': Date.now(),
-            'x-sent': true,
-            'Authorization': `Bearer ${req.headers['authorization']}` // Include the token in the response headers
-
-        }
-    };
-
-    const fileName = 'titles.json';
-    // Send the file
-    res.sendFile(fileName, options, function (err) {
+    // Verify the token
+    jwt.verify(token, 'your_secret_key', async (err, decoded) => {
         if (err) {
-            next(err);
-        } else {
-            console.log('Sent:', fileName);
+            // Token verification failed
+            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
+        }
+
+        // Token verification successful
+        console.log('Decoded Token:', decoded);
+
+        // Check if model is already running
+        if (isModelRunning) {
+            res.status(429).send('Model is currently running, please try again later');
+            return;
+        }
+
+        isModelRunning = true;
+
+        try {
+            // Spawn a child process to run the Python script
+            const python = spawn('python', ['model_local.py']);
+
+            // Log stdout and stderr from the Python script
+            python.stdout.on('data', (data) => {
+                console.log(`stdout: ${data}`);
+            });
+            python.stderr.on('data', (data) => {
+                console.error(`stderr: ${data}`);
+            });
+
+            // Wait for the Python script to finish
+            await new Promise((resolve, reject) => {
+                python.on('close', (code) => {
+                    console.log(`child process exited with code ${code}`);
+                    isModelRunning = false;
+                    resolve();
+                });
+            });
+
+            // Send response when the model finishes running
+            res.send('Model finished running');
+        } catch (error) {
+            // Handle errors
+            console.error('Error running the model:', error);
+            isModelRunning = false;
+            res.status(500).send('Internal Server Error');
         }
     });
 });
 
+app.get('/titles', (req, res, next) => {
+    const rawCookies = req.headers.cookie || '';
+
+    // Parse the cookie header to get individual cookies
+    const cookies = rawCookies.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+    }, {});
+
+    const token = cookies['token']; // Replace 'token' with the name of your token
+
+    // Verify the token
+    jwt.verify(token, 'your_secret_key', (err, decoded) => {
+        if (err) {
+            // Token verification failed
+            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
+        }
+
+        // Token verification successful
+        console.log('Decoded Token:', decoded);
+
+        // Options for sending the file
+        const options = {
+            root: path.join(__dirname, 'results'),
+            dotfiles: 'deny',
+            headers: {
+                'x-timestamp': Date.now(),
+                'x-sent': true,
+            }
+        };
+
+        const fileName = 'titles.json';
+        // Send the file
+        res.sendFile(fileName, options, function (err) {
+            if (err) {
+                next(err);
+            } else {
+                console.log('Sent:', fileName);
+            }
+        });
+    });
+});
+
+
 // Route to get image
 app.get('/image', (req, res, next) => {
-    // Options for sending the file
-    const options = {
-        root: path.join(__dirname, 'results'),
-        dotfiles: 'deny',
-        headers: {
-            'x-timestamp': Date.now(),
-            'x-sent': true
-        }
-    };
+    const rawCookies = req.headers.cookie || '';
 
-    const fileName = 'image.png';
-    // Send the file
-    res.sendFile(fileName, options, function (err) {
+    // Parse the cookie header to get individual cookies
+    const cookies = rawCookies.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+    }, {});
+
+    const token = cookies['token']; // Replace 'token' with the actual name of your token
+
+    // Verify the token
+    jwt.verify(token, 'your_secret_key', (err, decoded) => {
         if (err) {
-            next(err);
-        } else {
-            console.log('Sent:', fileName);
+            // Token verification failed
+            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
         }
+
+        // Token verification successful
+        console.log('Decoded Token:', decoded);
+
+        // Continue with your logic here...
+
+        // Options for sending the file
+        const options = {
+            root: path.join(__dirname, 'results'),
+            dotfiles: 'deny',
+            headers: {
+                'x-timestamp': Date.now(),
+                'x-sent': true,
+            }
+        };
+
+        const fileName = 'image.png';
+        // Send the file
+        res.sendFile(fileName, options, function (err) {
+            if (err) {
+                next(err);
+            } else {
+                console.log('Sent:', fileName);
+            }
+        });
     });
 });
 

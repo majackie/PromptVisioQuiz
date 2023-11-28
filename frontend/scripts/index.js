@@ -36,7 +36,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
     })
     .then(data => {
         // If the login was successful
-        if (data.success) {
+        if (data.success && data.token) {
             // Set 'isLoggedIn' to true in localStorage
             localStorage.setItem('isLoggedIn', 'true');
             localStorage.setItem('token', data.token);
