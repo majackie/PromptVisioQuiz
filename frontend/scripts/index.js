@@ -1,8 +1,10 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
 // Check if the user is already logged in
-if (localStorage.getItem('isLoggedIn') === 'true') {
-    // If so, redirect them to the model page
+const token = localStorage.getItem('token');
+
+if (token) {
+    // If a token is present, redirect them to the model page
     window.location.href = 'questionaire.html';
 }
 
