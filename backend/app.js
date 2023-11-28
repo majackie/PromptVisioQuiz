@@ -29,8 +29,37 @@ let isModelRunning = false;
 app.use(cors());
 app.use(express.json());
 
+// Middleware to verify JWT token
+const verifyToken = (req, res, next) => {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+        return res.status(401).json({ success: false, message: 'Unauthorized: No token provided' });
+    }
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
+        }
+
+        req.decoded = decoded;
+        next();
+    });
+};
+
+// Apply middleware to protect all endpoints except /login and /register
+app.use((req, res, next) => {
+    const unprotectedRoutes = ['/login', '/register'];
+
+    if (unprotectedRoutes.includes(req.path)) {
+        return next();
+    }
+
+    verifyToken(req, res, next);
+});
+
 // Route to run the model
-app.get('/model', async (req, res) => {
+app.get('/model', verifyToken, async (req, res) => {
     // Check if model is already running
     if (isModelRunning) {
         res.status(429).send('Model is currently running, please try again later');
@@ -71,7 +100,7 @@ app.get('/model', async (req, res) => {
 });
 
 // Route to get titles
-app.get('/titles', (req, res, next) => {
+app.get('/titles', verifyToken, (req, res, next) => {
     // Options for sending the file
     const options = {
         root: path.join(__dirname, 'results'),
@@ -94,7 +123,7 @@ app.get('/titles', (req, res, next) => {
 });
 
 // Route to get image
-app.get('/image', (req, res, next) => {
+app.get('/image', verifyToken, (req, res, next) => {
     // Options for sending the file
     const options = {
         root: path.join(__dirname, 'results'),
