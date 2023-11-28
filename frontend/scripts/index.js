@@ -12,14 +12,11 @@ const url = 'https://154.20.173.156:55699';
 
 // Add an event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {
-    // Prevent the form from being submitted normally
     event.preventDefault();
 
-    // Get the username and password from the form
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
 
-    // Send a POST request to the login endpoint
     fetch(url + '/login', {
         method: 'POST',
         headers: {
@@ -27,48 +24,38 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         },
         body: JSON.stringify({ username, password }),
     })
-        .then(response => {
-            // If the response was not ok, throw an error
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            // Otherwise, return the response data as JSON
-            return response.json();
-        })
-        .then(data => {
-            // Create a new h2 element
-            var h2 = document.createElement('h2');
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        var h2 = document.createElement('h2');
 
-            // If the login was successful
-            if (data.success) {
-                // Update the h2 text to 'Correct'
-                h2.textContent = 'Correct';
+        if (data.success) {
+            h2.textContent = 'Correct';
 
-                // If the login was successful, set 'isLoggedIn' to true in localStorage
-                localStorage.setItem('isLoggedIn', 'true');
-                if (data.role == "admin") {
-                    // Set role to 'admin' in localStorage
-                    localStorage.setItem('role', 'admin');
-                    // Redirect admin to the admin page
-                    window.location.href = 'admin.html';
-                } else {
-                    // Set role to 'user' in localStorage
-                    localStorage.setItem('role', 'user');
-                    // Redirect user to the model page
-                    window.location.href = 'questionaire.html';
-                }
+            // Save the JWT token in local storage
+            localStorage.setItem('token', data.token);
+
+            // Redirect based on user role
+            if (data.role === 'admin') {
+                localStorage.setItem('role', 'admin');
+                window.location.href = 'admin.html';
             } else {
-                // Update the h2 text to 'Incorrect'
-                h2.textContent = 'Incorrect';
+                localStorage.setItem('role', 'user');
+                window.location.href = 'questionaire.html';
             }
+        } else {
+            h2.textContent = 'Incorrect';
+        }
 
-            // Append the h2 element to the body
-            document.body.appendChild(h2);
-        })
-        .catch((error) => {
-            // If there was an error, log it to the console
-            console.error('Error:', error);
-        });
+        document.body.appendChild(h2);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
 });
 
 // Add an event listener for the logout button click
