@@ -9,6 +9,9 @@ const { spawn } = require('child_process');
 const pg = require('pg');
 const https = require('https');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
+
+const secretKey = 'your_secret_key';
 
 // Set up PostgreSQL connection
 const pool = new pg.Pool({
@@ -113,17 +116,26 @@ app.get('/image', (req, res, next) => {
     });
 });
 
-// Route for login
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
+
     // Query to check if the password matches the one in the database and get the role
     pool.query('SELECT password = crypt($1, password) AS password_matches, role FROM users WHERE username = $2', [password, username], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).json({ success: false });
         } else if (result.rows.length > 0 && result.rows[0].password_matches) {
-            // If the password matches, send success and the role
-            res.json({ success: true, role: result.rows[0].role });
+            // If the password matches, generate a JWT
+            const userId = result.rows[0].id; // Assuming there's an 'id' column in your users table
+            const userRole = result.rows[0].role;
+
+            const token = jwt.sign({ userId, username, role: userRole }, 'your_secret_key', { expiresIn: '1h' });
+
+            // Set the token in an HTTP-only cookie
+            res.cookie('token', token, { httpOnly: true });
+
+            // Send success and the role
+            res.json({ success: true, role: userRole });
         } else {
             // If the password doesn't match, send failure
             res.status(401).json({ success: false });
