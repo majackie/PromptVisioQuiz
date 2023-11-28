@@ -1,11 +1,27 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
 // Check if the user is already logged in
+
 const token = localStorage.getItem('token');
 
 if (token) {
-    // If a token is present, redirect them to the model page
-    window.location.href = 'questionaire.html';
+    try {
+        // Decode the token to get its payload
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+
+        // Check if the token is expired
+        if (decodedToken.exp * 1000 > Date.now()) {
+            // If not expired, redirect to the model page
+            window.location.href = 'questionaire.html';
+        } else {
+            // If expired, remove the token from localStorage
+            localStorage.removeItem('token');
+        }
+    } catch (error) {
+        // Handle invalid or expired token
+        console.error('Error decoding or validating token:', error);
+        localStorage.removeItem('token');
+    }
 }
 
 // Base URL for the API
