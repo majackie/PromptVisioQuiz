@@ -197,14 +197,11 @@ app.post('/register', (req, res) => {
     });
 });
 
+const http = require('http');
 // Read the certificate files
-const options = {
-    key: fs.readFileSync('certificates/key.pem'),
-    cert: fs.readFileSync('certificates/cert.pem'),
-    passphrase: '55699'
-};
+const server = http.createServer(app);
 
-// Create the HTTPS server
-https.createServer(options, app).listen(55699, () => {
+// Listen on port 55699
+server.listen(55699, () => {
     console.log('Server is running on port 55699');
 });

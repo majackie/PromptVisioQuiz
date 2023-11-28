@@ -27,8 +27,14 @@ document.getElementById('generateButton').addEventListener('click', function () 
 
 // Event listener for the questionnaire button
 document.getElementById('questionaireButton').addEventListener('click', function () {
-    // Fetch the titles from the API
-    fetch(url + '/titles')
+
+    fetch(url + '/titles', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': localStorage.getItem('token')
+        },
+    })
         .then(response => response.json())
         .then(data => {
             // Create a line break element
