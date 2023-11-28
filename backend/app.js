@@ -33,6 +33,8 @@ app.use(express.json());
 const verifyToken = (req, res, next) => {
     const token = req.headers['authorization'];
 
+    console.log('Received token:', token);
+
     if (!token) {
         return res.status(401).json({ success: false, message: 'Unauthorized: No token provided' });
     }
@@ -107,7 +109,9 @@ app.get('/titles', verifyToken, (req, res, next) => {
         dotfiles: 'deny',
         headers: {
             'x-timestamp': Date.now(),
-            'x-sent': true
+            'x-sent': true,
+            'Authorization': `Bearer ${req.headers['authorization']}` // Include the token in the response headers
+
         }
     };
 
