@@ -15,7 +15,7 @@ fetch(url + 'isLoggedIn', {
     }).then(response => response.json())
     .then(data => {
         if(!data.success){
-            window.location.href = 'questionaire.html';
+            window.location.href = 'index.html';
         }
     });
 
