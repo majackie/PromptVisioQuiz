@@ -49,7 +49,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                     window.location.href = 'admin.html';
                 } else {
                     // Redirect user to the model page
-                    window.location.href = 'questionnaire.html';
+                    window.location.href = 'questionaire.html';
                 }
             } else {
                 // Display an error message
