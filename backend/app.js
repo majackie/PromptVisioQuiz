@@ -8,13 +8,14 @@ const path = require('path');
 const { spawn } = require('child_process');
 const pg = require('pg');
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 
-
-
 const secretKey = 'your_secret_key';
+// Flag to check if model is running
+let isModelRunning = false;
 
 // Set up PostgreSQL connection
 const pool = new pg.Pool({
@@ -25,12 +26,10 @@ const pool = new pg.Pool({
     port: 5432,
 });
 
-// Flag to check if model is running
-let isModelRunning = false;
-
 // Middleware for CORS and JSON parsing
 app.use(cors({
-    origin: 'https://promptvisioquizfrontend.onrender.com',
+    // origin: 'https://promptvisioquizfrontend.onrender.com',
+    origin: 'http://127.0.0.1:5500',
     credentials: true,
 }));
 app.use(express.json());
@@ -38,7 +37,6 @@ app.use(cookieParser());
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-
     // Get the raw cookie string from the request headers
     const rawCookies = req.headers.cookie || '';
     // Parse the raw cookie string into an object
@@ -70,100 +68,86 @@ const verifyToken = (req, res, next) => {
     });
 };
 
-
-
 // Route to run the model
-app.get('/model', verifyToken, async(req, res) => {
+app.get('/model', verifyToken, async (req, res) => {
+    // Check if model is already running
+    if (isModelRunning) {
+        res.status(429).send('Model is currently running, please try again later');
+        return;
+    }
 
+    isModelRunning = true;
 
-        // Check if model is already running
-        if (isModelRunning) {
-            res.status(429).send('Model is currently running, please try again later');
-            return;
-        }
-
-        isModelRunning = true;
-
-        try {
-            // Spawn a child process to run the Python script
-            const python = spawn('python', ['model_local.py']);
-
-            // Log stdout and stderr from the Python script
-            python.stdout.on('data', (data) => {
-                console.log(`stdout: ${data}`);
-            });
-            python.stderr.on('data', (data) => {
-                console.error(`stderr: ${data}`);
+    try {
+        // Call the generate endpoint
+        http.get('http://154.20.173.156:778/generate', (generateRes) => {
+            // Get the image and titles concurrently
+            http.get('http://154.20.173.156:778/image', (imageRes) => {
+                const file = fs.createWriteStream(path.join(__dirname, 'results', 'image.png'));
+                imageRes.pipe(file);
             });
 
-            // Wait for the Python script to finish
-            await new Promise((resolve, reject) => {
-                python.on('close', (code) => {
-                    console.log(`child process exited with code ${code}`);
-                    isModelRunning = false;
-                    resolve();
-                });
+            http.get('http://154.20.173.156:778/titles', (titlesRes) => {
+                const file = fs.createWriteStream(path.join(__dirname, 'results', 'titles.json'));
+                titlesRes.pipe(file);
             });
 
-            // Send response when the model finishes running
-            res.send('Model finished running');
-        } catch (error) {
-            // Handle errors
-            console.error('Error running the model:', error);
+            res.send('Model run successfully');
             isModelRunning = false;
-            res.status(500).send('Internal Server Error');
-        }
-    });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    } finally {
+        isModelRunning = false;
+    }
+});
 
 
 app.get('/titles', verifyToken, (req, res, next) => {
-    
+    // Options for sending the file
+    const options = {
+        root: path.join(__dirname, 'results'),
+        dotfiles: 'deny',
+        headers: {
+            'x-timestamp': Date.now(),
+            'x-sent': true,
+        }
+    };
 
-        // Options for sending the file
-        const options = {
-            root: path.join(__dirname, 'results'),
-            dotfiles: 'deny',
-            headers: {
-                'x-timestamp': Date.now(),
-                'x-sent': true,
-            }
-        };
-
-        const fileName = 'titles.json';
-        // Send the file
-        res.sendFile(fileName, options, function (err) {
-            if (err) {
-                next(err);
-            } else {
-                console.log('Sent:', fileName);
-            }
-        });
+    const fileName = 'titles.json';
+    // Send the file
+    res.sendFile(fileName, options, function (err) {
+        if (err) {
+            next(err);
+        } else {
+            console.log('Sent:', fileName);
+        }
     });
-
-
+});
 
 // Route to get image
 app.get('/image', verifyToken, (req, res, next) => {
-        // Options for sending the file
-        const options = {
-            root: path.join(__dirname, 'results'),
-            dotfiles: 'deny',
-            headers: {
-                'x-timestamp': Date.now(),
-                'x-sent': true,
-            }
-        };
+    // Options for sending the file
+    const options = {
+        root: path.join(__dirname, 'results'),
+        dotfiles: 'deny',
+        headers: {
+            'x-timestamp': Date.now(),
+            'x-sent': true,
+        }
+    };
 
-        const fileName = 'image.png';
-        // Send the file
-        res.sendFile(fileName, options, function (err) {
-            if (err) {
-                next(err);
-            } else {
-                console.log('Sent:', fileName);
-            }
-        });
+    const fileName = 'image.png';
+    // Send the file
+    res.sendFile(fileName, options, function (err) {
+        if (err) {
+            next(err);
+        } else {
+            console.log('Sent:', fileName);
+        }
     });
+});
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;

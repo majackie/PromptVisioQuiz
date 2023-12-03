@@ -7,8 +7,8 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
 }
 
 // Base URL for the API
-const url = 'https://promptvisioquizbackend.onrender.com';
-// const url = 'http://localhost:3000';
+// const url = 'https://promptvisioquizbackend.onrender.com';
+const url = 'http://localhost:3000';
 
 // Add an event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {
@@ -28,42 +28,41 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         credentials: 'include',
         body: JSON.stringify({ username, password }),
     })
-    .then(response => {
-        // If the response was not ok, throw an error
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-    
-        return response.json();
-    })
-    .then(data => {
-        // If the login was successful
-        if (data.success) {
-            // Set 'isLoggedIn' to true in localStorage
-            localStorage.setItem('isLoggedIn', 'true');
-
-            // Display logout and register buttons
-            document.getElementById('logoutButton').style.display = 'block';
-            document.getElementById('registerButton').style.display = 'block';
-
-            // Redirect based on role
-            if (data.role === 'admin') {
-                // Redirect admin to the admin page
-                window.location.href = 'admin.html';
-            } else {
-                // Redirect user to the model page
-                window.location.href = 'questionnaire.html';
+        .then(response => {
+            // If the response was not ok, throw an error
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-        } else {
-            // Display an error message
-            alert('Login failed. Please check your credentials.');
-        }
-    })
-    .catch(error => {
-        // If there was an error, log it to the console
-        console.error('Error:', error);
-    });
+
+            return response.json();
+        })
+        .then(data => {
+            // If the login was successful
+            if (data.success) {
+                // Set 'isLoggedIn' to true in localStorage
+                localStorage.setItem('isLoggedIn', 'true');
+
+                // Display logout and register buttons
+                document.getElementById('logoutButton').style.display = 'block';
+                document.getElementById('registerButton').style.display = 'block';
+
+                // Redirect based on role
+                if (data.role === 'admin') {
+                    // Redirect admin to the admin page
+                    window.location.href = 'admin.html';
+                } else {
+                    // Redirect user to the model page
+                    window.location.href = 'questionnaire.html';
+                }
+            } else {
+                // Display an error message
+                alert('Login failed. Please check your credentials.');
+            }
+        })
+        .catch(error => {
+            // If there was an error, log it to the console
+            console.error('Error:', error);
+        });
 });
 
 // Add an event listener for the logout button click
