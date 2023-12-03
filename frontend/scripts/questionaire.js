@@ -31,7 +31,6 @@ document.getElementById('questionaireButton').addEventListener('click', function
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'authorization': localStorage.getItem('token')
         },
     })
         .then(response => response.json())
