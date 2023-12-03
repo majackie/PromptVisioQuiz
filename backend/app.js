@@ -41,7 +41,6 @@ const verifyToken = (req, res, next) => {
 
     // Get the raw cookie string from the request headers
     const rawCookies = req.headers.cookie || '';
-    console.log('Raw Cookies:', rawCookies);
     // Parse the raw cookie string into an object
     const cookies = rawCookies.split(';').reduce((acc, cookie) => {
         const [key, value] = cookie.trim().split('=');
@@ -51,7 +50,6 @@ const verifyToken = (req, res, next) => {
 
     // Extract the token from the cookies
     const token = cookies['token'];
-console.log('Extracted Token:', token);
 
     // Check if the token is missing
     if (!token) {
@@ -60,7 +58,6 @@ console.log('Extracted Token:', token);
 
     // Verify the token using your secret key
     jwt.verify(token, secretKey, (err, decoded) => {
-        console.log('Decoded Token:', decoded);
         if (err) {
             return res.status(403).json({ success: false, message: 'Forbidden: Invalid token' });
         }
@@ -182,7 +179,6 @@ app.post('/login', (req, res) => {
             const userRole = result.rows[0].role;
 
             const token = jwt.sign({ userId, username, role: userRole }, secretKey, { expiresIn: '1h' });
-            console.log('Generated Token:', token);
 
             // Set the token in an HTTP-only cookie
             res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 3600000, sameSite: 'None' });
