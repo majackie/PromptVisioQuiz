@@ -8,6 +8,7 @@ if (localStorage.getItem('isLoggedIn') !== 'true') {
 
 // Base URL for the API
 const url = 'https://promptvisioquizbackend.onrender.com';
+// const url = 'https://154.20.173.156:55699';
 // const url = 'http://localhost:3000';
 
 // Event listener for the generate button

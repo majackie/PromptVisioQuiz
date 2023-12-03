@@ -29,7 +29,7 @@ const pool = new pg.Pool({
 // Middleware for CORS and JSON parsing
 app.use(cors({
     origin: 'https://promptvisioquizfrontend.onrender.com',
-    // origin: 'http://127.0.0.1:5500',
+    // origin: '*',
     credentials: true,
 }));
 app.use(express.json());
@@ -176,6 +176,18 @@ app.post('/login', (req, res) => {
         }
     });
 });
+
+app.get('/admin', verifyToken, (req, res) => {
+    // Check if the role is admin
+    if (req.user.role === 'admin') {
+        // If the role is admin, send success
+        res.json({ success: true });
+    } else {
+        // If the role is not admin, send failure
+        res.status(403).json({ success: false });
+    }
+});
+
 
 // Route for registration
 app.post('/register', (req, res) => {

@@ -1,28 +1,26 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
 // Check if a valid JWT token is present and the role is 'admin'
-const token = localStorage.getItem('token');
+// const token = localStorage.getItem('token');
+const url = 'https://promptvisioquizbackend.onrender.com';
+// const url = 'http://localhost:3000';
 
-if (!token) {
-    // If not, redirect to the login page
-    window.location.href = 'index.html';
-} else {
-    try {
-        // Decode the token to get its payload
-        const decodedToken = JSON.parse(atob(token.split('.')[1]));
-
-        // Check if the role is 'admin'
-        if (decodedToken.role !== 'admin') {
-            // If not, redirect to the login page
-            window.location.href = 'index.html';
-        }
-    } catch (error) {
-        // Handle invalid or expired token
-        console.error('Error decoding or validating token:', error);
-        // Redirect to the login page
-        window.location.href = 'index.html';
-    }
-}
+        fetch(url + '/admin', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Display the admin page
+                    document.getElementById('adminPage').style.display = 'block';
+                } else {
+                    // Redirect to the login page
+                    window.location.href = 'index.html';
+                }
+            });
 
 // Set the button click event
 document.addEventListener('DOMContentLoaded', function () {
