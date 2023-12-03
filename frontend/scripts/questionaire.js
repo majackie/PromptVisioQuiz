@@ -5,6 +5,21 @@ const url = 'https://promptvisioquizbackend.onrender.com';
 // const url = 'https://154.20.173.156:55699';
 // const url = 'http://localhost:3000';
 
+fetch(url + 'isLoggedIn', {
+    
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    }).then(response => response.json())
+    .then(data => {
+        if(!data.success){
+            window.location.href = 'questionaire.html';
+        }
+    });
+
+
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
     // Fetch the model from the API

@@ -160,7 +160,15 @@ app.get('/image', verifyToken, (req, res, next) => {
     });
 });
 
+app.get('/isLoggedIn', verifyToken, (req, res) => {
+    // Send success
+    res.json({ success: true });
+});
+
 app.post('/login', (req, res) => {
+
+
+
     const { username, password } = req.body;
 
     // Query to check if the password matches the one in the database and get the role
