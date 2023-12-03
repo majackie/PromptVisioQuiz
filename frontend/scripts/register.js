@@ -1,7 +1,7 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
 // Check if the user is already logged in
-fetch(url + 'isLoggedIn', {
+fetch(url + '/isLoggedIn', {
     
     method: 'GET',
     headers: {
