@@ -1,9 +1,8 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
-const url = 'https://promptvisioquizfrontend.onrender.com/index.html';
+onst url = 'https://promptvisioquizbackend.onrender.com';
 // Check if the user is already logged in
 fetch(url + '/isLoggedIn', {
-    
     method: 'GET',
     headers: {
         'Content-Type': 'application/json',

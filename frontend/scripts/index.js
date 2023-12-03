@@ -6,7 +6,6 @@ const url = 'https://promptvisioquizbackend.onrender.com';
 // const url = 'http://localhost:3000';
 
 fetch(url + '/isLoggedIn', {
-    
     method: 'GET',
     headers: {
         'Content-Type': 'application/json',
@@ -18,6 +17,7 @@ fetch(url + '/isLoggedIn', {
             window.location.href = 'questionaire.html';
         }
     });
+
 
 // Add an event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {
