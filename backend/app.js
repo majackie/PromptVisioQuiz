@@ -81,12 +81,14 @@ const verifyToken = (req, res, next) => {
 
 // Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
+    console.log('Received request for /model');
     if (isModelRunning) {
         res.status(429).send('Model is currently running, please try again later');
         return;
     }
 
     isModelRunning = true;
+    console.log('Starting model');
 
     try {
         // Wrap http.get in a new Promise to handle completion
