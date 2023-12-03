@@ -13,7 +13,13 @@ const url = 'https://promptvisioquizbackend.onrender.com';
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
     // Fetch the model from the API
-    fetch(url + '/model')
+    fetch(url + '/model', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    })
         .then(response => response.text())
         .then(message => {
             // Log the response message
