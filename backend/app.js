@@ -31,20 +31,24 @@ app.use(express.json());
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization'];
-
-    console.log('Received token:', token);
+    const rawCookies = req.headers.cookie || '';
+    const cookies = rawCookies.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+    }, {});
+    const token = cookies['token'];
 
     if (!token) {
-        return res.status(401).json({ success: false, message: 'Unauthorized: No token provided' });
+        return res.status(401).json({ success: false, message: 'Unauthorized: Token missing' });
     }
 
-    jwt.verify(token, secretKey, (err, decoded) => {
+    jwt.verify(token, 'your_secret_key', (err, decoded) => {
         if (err) {
-            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
+            return res.status(403).json({ success: false, message: 'Forbidden: Invalid token' });
         }
 
-        req.decoded = decoded;
+        req.user = decoded;
         next();
     });
 };
@@ -52,27 +56,8 @@ const verifyToken = (req, res, next) => {
 
 
 // Route to run the model
-app.get('/model', (req, res) => {
-    const rawCookies = req.headers.cookie || '';
+app.get('/model', verifyToken, async(req, res) => {
 
-    // Parse the cookie header to get individual cookies
-    const cookies = rawCookies.split(';').reduce((acc, cookie) => {
-        const [key, value] = cookie.trim().split('=');
-        acc[key] = value;
-        return acc;
-    }, {});
-
-    const token = cookies['token']; // Replace 'token' with the actual name of your token
-
-    // Verify the token
-    jwt.verify(token, 'your_secret_key', async (err, decoded) => {
-        if (err) {
-            // Token verification failed
-            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
-        }
-
-        // Token verification successful
-        console.log('Decoded Token:', decoded);
 
         // Check if model is already running
         if (isModelRunning) {
@@ -112,29 +97,10 @@ app.get('/model', (req, res) => {
             res.status(500).send('Internal Server Error');
         }
     });
-});
 
-app.get('/titles', (req, res, next) => {
-    const rawCookies = req.headers.cookie || '';
 
-    // Parse the cookie header to get individual cookies
-    const cookies = rawCookies.split(';').reduce((acc, cookie) => {
-        const [key, value] = cookie.trim().split('=');
-        acc[key] = value;
-        return acc;
-    }, {});
-
-    const token = cookies['token']; // Replace 'token' with the name of your token
-
-    // Verify the token
-    jwt.verify(token, 'your_secret_key', (err, decoded) => {
-        if (err) {
-            // Token verification failed
-            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
-        }
-
-        // Token verification successful
-        console.log('Decoded Token:', decoded);
+app.get('/titles', verifyToken, (req, res, next) => {
+    
 
         // Options for sending the file
         const options = {
@@ -156,7 +122,7 @@ app.get('/titles', (req, res, next) => {
             }
         });
     });
-});
+
 
 
 // Route to get image
