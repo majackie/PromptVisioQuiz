@@ -81,7 +81,6 @@ const verifyToken = (req, res, next) => {
 
 // Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
-    // Check if model is already running
     if (isModelRunning) {
         res.status(429).send('Model is currently running, please try again later');
         return;
@@ -90,22 +89,39 @@ app.get('/model', verifyToken, async (req, res) => {
     isModelRunning = true;
 
     try {
-        // Call the generate endpoint
-        http.get('http://154.20.173.156:778/generate', (generateRes) => {
-            // Get the image and titles concurrently
+        // Wrap http.get in a new Promise to handle completion
+        const generatePromise = new Promise((resolve, reject) => {
+            http.get('http://154.20.173.156:778/generate', (generateRes) => {
+                resolve();
+            }).on('error', (err) => {
+                reject(err);
+            });
+        });
+
+        const imagePromise = new Promise((resolve, reject) => {
             http.get('http://154.20.173.156:778/image', (imageRes) => {
                 const file = fs.createWriteStream(path.join(__dirname, 'results', 'image.png'));
                 imageRes.pipe(file);
+                resolve();
+            }).on('error', (err) => {
+                reject(err);
             });
+        });
 
+        const titlesPromise = new Promise((resolve, reject) => {
             http.get('http://154.20.173.156:778/titles', (titlesRes) => {
                 const file = fs.createWriteStream(path.join(__dirname, 'results', 'titles.json'));
                 titlesRes.pipe(file);
+                resolve();
+            }).on('error', (err) => {
+                reject(err);
             });
-
-            res.send('Model run successfully');
-            isModelRunning = false;
         });
+
+        // Wait for all promises to resolve before sending response
+        await Promise.all([generatePromise, imagePromise, titlesPromise]);
+
+        res.send('Model run successfully');
     } catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
@@ -113,7 +129,6 @@ app.get('/model', verifyToken, async (req, res) => {
         isModelRunning = false;
     }
 });
-
 
 app.get('/titles', verifyToken, (req, res, next) => {
     // Options for sending the file
