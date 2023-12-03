@@ -7,7 +7,8 @@ if (localStorage.getItem('isLoggedIn') !== 'true') {
 }
 
 // Base URL for the API
-const url = 'https://promptvisioquizbackend.onrender.com';
+// const url = 'https://promptvisioquizbackend.onrender.com';
+const url = 'http://localhost:3000';
 
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
@@ -32,6 +33,7 @@ document.getElementById('questionaireButton').addEventListener('click', function
         headers: {
             'Content-Type': 'application/json',
         },
+        credentials: 'include',
     })
         .then(response => response.json())
         .then(data => {

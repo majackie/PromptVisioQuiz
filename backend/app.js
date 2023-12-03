@@ -10,6 +10,9 @@ const pg = require('pg');
 const https = require('https');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+
+
 
 const secretKey = 'your_secret_key';
 
@@ -26,29 +29,46 @@ const pool = new pg.Pool({
 let isModelRunning = false;
 
 // Middleware for CORS and JSON parsing
-app.use(cors());
+app.use(cors({
+    origin: 'http://127.0.0.1:5500',
+    credentials: true,
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 // Middleware to verify JWT token
 const verifyToken = (req, res, next) => {
+
+    // Get the raw cookie string from the request headers
     const rawCookies = req.headers.cookie || '';
+    console.log('Raw Cookies:', rawCookies);
+    // Parse the raw cookie string into an object
     const cookies = rawCookies.split(';').reduce((acc, cookie) => {
         const [key, value] = cookie.trim().split('=');
         acc[key] = value;
         return acc;
     }, {});
-    const token = cookies['token'];
 
+    // Extract the token from the cookies
+    const token = cookies['token'];
+console.log('Extracted Token:', token);
+
+    // Check if the token is missing
     if (!token) {
         return res.status(401).json({ success: false, message: 'Unauthorized: Token missing' });
     }
 
-    jwt.verify(token, 'your_secret_key', (err, decoded) => {
+    // Verify the token using your secret key
+    jwt.verify(token, secretKey, (err, decoded) => {
+        console.log('Decoded Token:', decoded);
         if (err) {
             return res.status(403).json({ success: false, message: 'Forbidden: Invalid token' });
         }
 
+        // If the token is valid, set the decoded user information in the request object
         req.user = decoded;
+
+        // Move on to the next middleware or route handler
         next();
     });
 };
@@ -126,30 +146,7 @@ app.get('/titles', verifyToken, (req, res, next) => {
 
 
 // Route to get image
-app.get('/image', (req, res, next) => {
-    const rawCookies = req.headers.cookie || '';
-
-    // Parse the cookie header to get individual cookies
-    const cookies = rawCookies.split(';').reduce((acc, cookie) => {
-        const [key, value] = cookie.trim().split('=');
-        acc[key] = value;
-        return acc;
-    }, {});
-
-    const token = cookies['token']; // Replace 'token' with the actual name of your token
-
-    // Verify the token
-    jwt.verify(token, 'your_secret_key', (err, decoded) => {
-        if (err) {
-            // Token verification failed
-            return res.status(401).json({ success: false, message: 'Unauthorized: Invalid token' });
-        }
-
-        // Token verification successful
-        console.log('Decoded Token:', decoded);
-
-        // Continue with your logic here...
-
+app.get('/image', verifyToken, (req, res, next) => {
         // Options for sending the file
         const options = {
             root: path.join(__dirname, 'results'),
@@ -170,7 +167,6 @@ app.get('/image', (req, res, next) => {
             }
         });
     });
-});
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
@@ -185,13 +181,15 @@ app.post('/login', (req, res) => {
             const userId = result.rows[0].id; // Assuming there's an 'id' column in your users table
             const userRole = result.rows[0].role;
 
-            const token = jwt.sign({ userId, username, role: userRole }, 'your_secret_key', { expiresIn: '1h' });
+            const token = jwt.sign({ userId, username, role: userRole }, secretKey, { expiresIn: '1h' });
+            console.log('Generated Token:', token);
 
             // Set the token in an HTTP-only cookie
-            res.cookie('token', token, { httpOnly: true });
-
+            res.cookie('token', token, { httpOnly: true, maxAge: 3600000, sameSite: 'None' });
+            // res.send();
             // Send success and the role
             res.json({ success: true, role: userRole });
+            // res.send('logged in');
         } else {
             // If the password doesn't match, send failure
             res.status(401).json({ success: false });
