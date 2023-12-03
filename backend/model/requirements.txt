@@ -3,3 +3,4 @@ feedparser==6.0.10
 torch==2.1.1
 pillow==10.1.0
 requests==2.31.0
+flask==3.0.0
