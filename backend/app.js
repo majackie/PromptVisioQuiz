@@ -79,6 +79,27 @@ const verifyToken = (req, res, next) => {
     });
 };
 
+app.get('/admin/users', verifyToken, (req, res) => {
+    console.log("received request for /admin/users")
+    // Check if the role is admin
+    if (req.user.role === 'admin') {
+        // Query to get all users
+        pool.query('SELECT id, username, role FROM users', (err, result) => {
+            if (err) {
+                console.error(err);
+                res.status(500).json({ success: false });
+            } else {
+                // If successful, send the list of users
+                res.json({ success: true, users: result.rows });
+            }
+        });
+    } else {
+        // If the role is not admin, send failure
+        res.status(403).json({ success: false });
+    }
+});
+
+
 // Route to run the model
 // Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
