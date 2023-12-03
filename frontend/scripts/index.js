@@ -7,7 +7,7 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
 }
 
 // Base URL for the API
-const url = 'https://154.20.173.156:55699';
+const url = 'https://promptvisioquizbackend.onrender.com';
 
 // Add an event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {

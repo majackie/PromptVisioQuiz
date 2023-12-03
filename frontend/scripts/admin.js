@@ -1,3 +1,5 @@
+// ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
+
 // Check if a valid JWT token is present and the role is 'admin'
 const token = localStorage.getItem('token');
 
