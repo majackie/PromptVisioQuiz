@@ -80,6 +80,7 @@ const verifyToken = (req, res, next) => {
 };
 
 // Route to run the model
+// Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
     console.log('Received request for /model');
     if (isModelRunning) {
@@ -91,37 +92,42 @@ app.get('/model', verifyToken, async (req, res) => {
     console.log('Starting model');
 
     try {
-        // Wrap http.get in a new Promise to handle completion
-        const generatePromise = new Promise((resolve, reject) => {
-            http.get('http://154.20.173.156:778/generate', (generateRes) => {
-                resolve();
-            }).on('error', (err) => {
-                reject(err);
+        // Wrap your model running code in a new Promise
+        await new Promise((resolve, reject) => {
+            // Your model running code here
+            const generatePromise = new Promise((resolve, reject) => {
+                http.get('http://154.20.173.156:778/generate', (generateRes) => {
+                    resolve();
+                }).on('error', (err) => {
+                    reject(err);
+                });
             });
-        });
 
-        const imagePromise = new Promise((resolve, reject) => {
-            http.get('http://154.20.173.156:778/image', (imageRes) => {
-                const file = fs.createWriteStream(path.join(__dirname, 'results', 'image.png'));
-                imageRes.pipe(file);
-                resolve();
-            }).on('error', (err) => {
-                reject(err);
+            const imagePromise = new Promise((resolve, reject) => {
+                http.get('http://154.20.173.156:778/image', (imageRes) => {
+                    const file = fs.createWriteStream(path.join(__dirname, 'results', 'image.png'));
+                    imageRes.pipe(file);
+                    resolve();
+                }).on('error', (err) => {
+                    reject(err);
+                });
             });
-        });
 
-        const titlesPromise = new Promise((resolve, reject) => {
-            http.get('http://154.20.173.156:778/titles', (titlesRes) => {
-                const file = fs.createWriteStream(path.join(__dirname, 'results', 'titles.json'));
-                titlesRes.pipe(file);
-                resolve();
-            }).on('error', (err) => {
-                reject(err);
+            const titlesPromise = new Promise((resolve, reject) => {
+                http.get('http://154.20.173.156:778/titles', (titlesRes) => {
+                    const file = fs.createWriteStream(path.join(__dirname, 'results', 'titles.json'));
+                    titlesRes.pipe(file);
+                    resolve();
+                }).on('error', (err) => {
+                    reject(err);
+                });
             });
-        });
 
-        // Wait for all promises to resolve before sending response
-        await Promise.all([generatePromise, imagePromise, titlesPromise]);
+            // Wait for all promises to resolve before sending response
+            Promise.all([generatePromise, imagePromise, titlesPromise])
+                .then(() => resolve())
+                .catch((err) => reject(err));
+        });
 
         res.send('Model run successfully');
     } catch (error) {
