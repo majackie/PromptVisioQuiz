@@ -1,10 +1,19 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
 // Check if the user is already logged in
-if (localStorage.getItem('isLoggedIn') === 'true') {
-    // If so, redirect to the model page
-    window.location.href = 'questionaire.html';
-}
+fetch(url + 'isLoggedIn', {
+    
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    }).then(response => response.json())
+    .then(data => {
+        if(data.success){
+            window.location.href = 'questionaire.html';
+        }
+    });
 
 // Base URL for the API
 const url = 'https://promptvisioquizbackend.onrender.com';
