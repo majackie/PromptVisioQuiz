@@ -69,5 +69,4 @@ def get_image():
 
 
 if __name__ == "__main__":
-    context = ("./certificates/cert.pem", "./certificates/key.pem")
-    app.run(host="0.0.0.0", port=778, debug=True, ssl_context=context)
+    app.run(host='0.0.0.0', port=778, debug=True)
