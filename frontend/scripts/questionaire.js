@@ -47,7 +47,7 @@ document.getElementById('questionaireButton').addEventListener('click', function
             // Create an image element
             const img = document.createElement('img');
             // Set the source of the image
-            img.src = url + '/image';
+            img.src = url + '/image?' + new Date().getTime();
             // Append the image and a line break to the data container
             dataContainer.appendChild(img);
             dataContainer.appendChild(br);
