@@ -29,16 +29,18 @@ const pool = new pg.Pool({
 // Middleware for CORS and JSON parsing
 app.use(cors({
     origin: 'https://promptvisioquizfrontend.onrender.com',
+    // origin: 'http://127.0.0.1:5500',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://promptvisioquizfrontend.onrender.com');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
+    res.header('Access-Control-Allow-Origin', 'https://promptvisioquizfrontend.onrender.com');
+    // res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:5500');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
 });
 
 app.use(express.json());
@@ -196,7 +198,6 @@ app.get('/admin', verifyToken, (req, res) => {
         res.status(403).json({ success: false });
     }
 });
-
 
 // Route for registration
 app.post('/register', (req, res) => {
