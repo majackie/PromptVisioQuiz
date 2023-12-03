@@ -1,3 +1,5 @@
+// ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
+
 // Check if the user is already logged in
 if (localStorage.getItem('isLoggedIn') === 'true') {
     // If so, redirect them to the model page
@@ -5,8 +7,7 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
 }
 
 // Base URL for the API
-// const url = 'https://154.20.173.156:55699';
-const url = 'http://localhost:55699';
+const url = 'https://154.20.173.156:55699';
 
 // Add an event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {
