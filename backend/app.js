@@ -188,6 +188,12 @@ app.post('/login', (req, res) => {
     });
 });
 
+app.get('/logout', (req, res) => {
+    // Clear the token in the cookie
+    res.cookie('token', 'clear', { httpOnly: true, secure: true, maxAge: 0, sameSite: 'None' });
+    res.json({ success: true });
+});
+
 app.get('/admin', verifyToken, (req, res) => {
     // Check if the role is admin
     if (req.user.role === 'admin') {

@@ -124,8 +124,14 @@ document.getElementById('questionaireButton').addEventListener('click', function
 
 // Event listener for the logout button
 document.getElementById('logoutButton').addEventListener('click', function () {
-    // Remove the 'isLoggedIn' item from local storage
-    localStorage.removeItem('isLoggedIn');
-    // Redirect to the login page
+    fetch(url + '/logout', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    }).then(response => response.json())
+    .then(data => {
+    });
     window.location.href = 'index.html';
 });
