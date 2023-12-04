@@ -264,8 +264,6 @@ app.get('/isLoggedIn', verifyToken, (req, res) => {
 
 app.post('/login', (req, res) => {
 
-
-
     const { username, password } = req.body;
 
     // Query to check if the password matches the one in the database and get the role
