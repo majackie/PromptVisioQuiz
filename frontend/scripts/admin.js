@@ -27,7 +27,7 @@ fetch(url + '/admin', {
 
 // Set the button click event
 document.addEventListener('DOMContentLoaded', function () {
-    var button = document.querySelector('.container button');
+    const button = document.querySelector('.container button');
 
     button.onclick = function () {
         window.location.href = 'questionaire.html';
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
     // Set the button click event for navigating to the questionaire page
-    var button = document.querySelector('.container button');
+    const button = document.querySelector('.container button');
     button.onclick = function () {
         window.location.href = 'questionaire.html';
     };
