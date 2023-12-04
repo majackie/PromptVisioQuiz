@@ -121,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token, // Include your JWT token
                 },
                 credentials: 'include',
                 body: JSON.stringify({ newRole: userRole }),
@@ -138,5 +137,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    
+
 });
