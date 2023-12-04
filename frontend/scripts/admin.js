@@ -102,9 +102,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-
-    document.addEventListener('DOMContentLoaded', function () {
-        // ... (existing code) ...
     
         // Form submission event for updating user role
         document.getElementById('updateUserRoleForm').addEventListener('submit', function (event) {
@@ -135,7 +132,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
         });
-    });
 
 
 });
