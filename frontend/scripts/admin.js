@@ -4,9 +4,9 @@
 // const token = localStorage.getItem('token');
 
 // Base URL for the API
-const url = 'https://promptvisioquizbackend.onrender.com';
+// const url = 'https://promptvisioquizbackend.onrender.com';
 // const url = 'https://154.20.173.156:55699';
-// const url = 'http://localhost:3000';
+const url = 'http://localhost:3000';
 
 fetch(url + '/admin', {
     method: 'GET',
@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 });
 
-
 document.addEventListener('DOMContentLoaded', function () {
     // Set the button click event for navigating to the questionaire page
     const button = document.querySelector('.container button');
@@ -55,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.success) {
                     // Display the list of user_accounts
-                    displayUsers(data.user_accounts);
+                    displayUsers(data.users);
                 } else {
                     console.error('Failed to get user_accounts');
                 }
@@ -63,18 +62,38 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Function to display user_accounts in the container
-    function displayUsers(user_accounts) {
+    function displayUsers(users) {
         const userContainer = document.getElementById('userContainer');
 
         // Clear previous content
         userContainer.innerHTML = '';
 
-        // Create and append elements for each user
-        user_accounts.forEach(user => {
-            const userElement = document.createElement('div');
-            userElement.innerHTML = `<p>User ID: ${user.id}, Username: ${user.username}, Role: ${user.role}</p>`;
-            userContainer.appendChild(userElement);
+        // Create table
+        const table = document.createElement('table');
+
+        // Create table header
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        ['User ID', 'Username', 'Role', 'API Count', 'correct', 'incorrect'].forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
         });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Create and append rows for each user
+        users.forEach(user => {
+            const tr = document.createElement('tr');
+            [user.id, user.username, user.role, user.api_count, user.correct, user.incorrect].forEach(item => {
+                const td = document.createElement('td');
+                td.textContent = item;
+                tr.appendChild(td);
+            });
+            table.appendChild(tr);
+        });
+
+        userContainer.appendChild(table);
     }
 
     document.getElementById('deleteUserForm').addEventListener('submit', function (event) {

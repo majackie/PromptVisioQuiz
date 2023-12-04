@@ -1,6 +1,10 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
-const url = 'https://promptvisioquizbackend.onrender.com';
+// Base URL for the API
+// const url = 'https://promptvisioquizbackend.onrender.com';
+// const url = 'https://154.20.173.156:55699';
+const url = 'http://localhost:3000';
+
 // Check if the user is already logged in
 fetch(url + '/isLoggedIn', {
     method: 'GET',
@@ -14,10 +18,6 @@ fetch(url + '/isLoggedIn', {
             window.location.href = 'questionaire.html';
         }
     });
-
-// Base URL for the API
-// const url = 'https://154.20.173.156:55699';
-// const url = 'http://localhost:3000';
 
 // Event listener for the registration form submission
 document.getElementById('registerForm').addEventListener('submit', function (event) {
