@@ -1,9 +1,8 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
 // Base URL for the API
-// const url = 'https://promptvisioquizbackend.onrender.com';
-// const url = 'https://154.20.173.156:55699';
-const url = 'http://localhost:3000';
+const url = 'https://promptvisioquizbackend.onrender.com';
+// const url = 'http://localhost:3000';
 
 // Check if the user is already logged in
 fetch(url + '/admin', {
@@ -25,16 +24,8 @@ fetch(url + '/admin', {
 
 // Set the button click event
 document.addEventListener('DOMContentLoaded', function () {
-    const button = document.querySelector('.container button');
-
-    button.onclick = function () {
-        window.location.href = 'questionaire.html';
-    };
-});
-
-document.addEventListener('DOMContentLoaded', function () {
     // Set the button click event for navigating to the questionaire page
-    const button = document.querySelector('.container button');
+    const button = document.querySelector('#goToQuestionaireButton');
     button.onclick = function () {
         window.location.href = 'questionaire.html';
     };
@@ -72,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create table header
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
-        ['User ID', 'Username', 'Role', 'API Count', 'correct', 'incorrect'].forEach(headerText => {
+        ['User ID', 'Username', 'Role', 'API Count'].forEach(headerText => {
             const th = document.createElement('th');
             th.textContent = headerText;
             headerRow.appendChild(th);
@@ -83,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create and append rows for each user
         users.forEach(user => {
             const tr = document.createElement('tr');
-            [user.id, user.username, user.role, user.api_count, user.correct, user.incorrect].forEach(item => {
+            [user.id, user.username, user.role, user.api_count].forEach(item => {
                 const td = document.createElement('td');
                 td.textContent = item;
                 tr.appendChild(td);
