@@ -99,6 +99,35 @@ app.get('/admin/users', verifyToken, (req, res) => {
     }
 });
 
+app.put('/admin/users/:userId/role', verifyToken, async (req, res) => {
+    const userIdToUpdate = req.params.userId;
+    const newRole = req.body.newRole;
+
+    // Check if the requesting user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Forbidden: Insufficient privileges' });
+    }
+
+    // Check if the new role is valid (either 'user' or 'admin')
+    if (newRole !== 'user' && newRole !== 'admin') {
+        return res.status(400).json({ success: false, message: 'Bad Request: Invalid role' });
+    }
+
+    // Your logic to update the user's role in the database
+    try {
+        const result = await pool.query('UPDATE users SET role = $1 WHERE id = $2', [newRole, userIdToUpdate]);
+
+        if (result.rowCount > 0) {
+            res.json({ success: true, message: 'User role updated successfully' });
+        } else {
+            res.status(404).json({ success: false, message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 // Route to delete a user by ID
 app.delete('/admin/users/:userId', verifyToken, async (req, res) => {
     const userIdToDelete = req.params.userId;
