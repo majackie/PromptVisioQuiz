@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token, // Include your JWT token
             },
             credentials: 'include',
         }).then(response => response.json())
