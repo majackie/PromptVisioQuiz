@@ -16,9 +16,17 @@
 
         <!-- New buttons for admin actions -->
         <button id="getAllUsersButton">Get All Users</button>
-
+        
         <!-- Container to display users -->
-        <div id="userContainer"></div>
+        <div id="userContainer">
+            <h2>Users</h2>
+        </div>
+        <!-- Form to delete a user -->
+        <form id="deleteUserForm">
+            <label for="userIdToDelete">Enter User ID to Delete:</label>
+            <input type="text" id="userIdToDelete" name="userIdToDelete" required>
+            <button type="submit">Delete User</button>
+        </form>
     </div>
 </body>
 

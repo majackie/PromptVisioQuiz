@@ -76,4 +76,31 @@ document.addEventListener('DOMContentLoaded', function () {
             userContainer.appendChild(userElement);
         });
     }
+    
+    document.getElementById('deleteUserForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Get the user ID to delete
+        const userIdToDelete = document.getElementById('userIdToDelete').value;
+
+        // Make a request to delete the user with the specified ID
+        fetch(url + '/admin/users/' + userIdToDelete, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('User deleted successfully');
+                    // Refresh the list of users after deletion
+                    document.getElementById('getAllUsersButton').click();
+                } else {
+                    console.error('Failed to delete user');
+                }
+            });
+    });
+
+
 });

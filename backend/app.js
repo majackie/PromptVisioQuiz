@@ -99,6 +99,30 @@ app.get('/admin/users', verifyToken, (req, res) => {
     }
 });
 
+// Route to delete a user by ID
+app.delete('/admin/users/:userId', verifyToken, async (req, res) => {
+    const userIdToDelete = req.params.userId;
+
+    // Check if the requesting user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Forbidden: Insufficient privileges' });
+    }
+
+    // Your logic to delete the user from the database
+    try {
+        const result = await pool.query('DELETE FROM users WHERE id = $1', [userIdToDelete]);
+
+        if (result.rowCount > 0) {
+            res.json({ success: true, message: 'User deleted successfully' });
+        } else {
+            res.status(404).json({ success: false, message: 'User not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+});
+
 
 // Route to run the model
 // Route to run the model
