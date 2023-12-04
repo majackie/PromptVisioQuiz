@@ -381,7 +381,7 @@ async function incrementApiCount(username) {
     try {
         // Increment the api_count by 1
         const updateSql = `
-            UPDATE your_table_name
+            UPDATE user_details
             SET api_count = api_count + 1
             WHERE username = $1
             RETURNING api_count
