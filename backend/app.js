@@ -153,6 +153,7 @@ app.delete('/admin/users/:userId', verifyToken, async (req, res) => {
 });
 
 
+
 // Route to run the model
 // Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
@@ -160,6 +161,16 @@ app.get('/model', verifyToken, async (req, res) => {
     if (isModelRunning) {
         res.status(429).send('Model is currently running, please try again later');
         return;
+    }
+
+    const apiCount = checkApiCount(req.body.username);
+
+    if (apiCount > 20){
+        res.status(403).send('API limit reached, please try again later');
+        return
+    }
+    else{
+        incrementApiCount(req.body.username);
     }
 
     isModelRunning = true;
@@ -339,6 +350,61 @@ app.post('/register', (req, res) => {
         }
     });
 });
+
+async function checkApiCount(username) {
+    const client = await pool.connect();
+
+    try {
+        // Using template string for the SQL query
+        const sql = `
+            SELECT api_count
+            FROM users
+            WHERE username = $1
+        `;
+
+        // Execute the query
+        const result = await client.query(sql, [username]);
+
+        // Return the api_count value
+        return result.rows[0].api_count;
+    } catch (error) {
+        // Handle errors
+        console.error('Error executing query:', error.message);
+        throw error;
+    } finally {
+        // Release the client back to the pool
+        client.release();
+    }
+}
+
+async function incrementApiCount(username) {
+    const client = await pool.connect();
+
+    try {
+        // Increment the api_count by 1
+        const updateSql = `
+            UPDATE your_table_name
+            SET api_count = api_count + 1
+            WHERE username = $1
+            RETURNING api_count
+        `;
+
+        // Execute the update query
+        const result = await client.query(updateSql, [username]);
+
+        // Return the updated api_count value
+        return result.rows[0].api_count;
+    } catch (error) {
+        // Handle errors
+        console.error('Error executing update query:', error.message);
+        throw error;
+    } finally {
+        // Release the client back to the pool
+        client.release();
+    }
+}
+
+
 
 // Start the server
 app.listen(process.env.PORT || 3000, () => {
