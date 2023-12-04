@@ -152,12 +152,10 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
     }
 });
 
-
-
-// Route to run the model
 // Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
     console.log('Received request for /model');
+
     if (isModelRunning) {
         res.status(429).send('Model is currently running, please try again later');
         return;
@@ -165,11 +163,11 @@ app.get('/model', verifyToken, async (req, res) => {
 
     const apiCount = checkApiCount(req.body.username);
 
-    if (apiCount > 20){
+    if (apiCount > 20) {
         res.status(403).send('API limit reached, please try again later');
         return
     }
-    else{
+    else {
         incrementApiCount(req.body.username);
     }
 
@@ -274,7 +272,6 @@ app.get('/isLoggedIn', verifyToken, (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-
     const { username, password } = req.body;
 
     // Query to check if the password matches the one in the database and get the role
@@ -399,8 +396,6 @@ async function incrementApiCount(username) {
         client.release();
     }
 }
-
-
 
 // Start the server
 app.listen(process.env.PORT || 3000, () => {

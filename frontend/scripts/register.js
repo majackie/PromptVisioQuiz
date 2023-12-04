@@ -12,9 +12,9 @@ fetch(url + '/isLoggedIn', {
         'Content-Type': 'application/json',
     },
     credentials: 'include',
-    }).then(response => response.json())
+}).then(response => response.json())
     .then(data => {
-        if(data.success){
+        if (data.success) {
             window.location.href = 'questionaire.html';
         }
     });

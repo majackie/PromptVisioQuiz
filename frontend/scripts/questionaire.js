@@ -5,20 +5,19 @@
 // const url = 'https://154.20.173.156:55699';
 const url = 'http://localhost:3000';
 
+// Check if the user is already logged in
 fetch(url + '/isLoggedIn', {
-    
     method: 'GET',
     headers: {
         'Content-Type': 'application/json',
     },
     credentials: 'include',
-    }).then(response => response.json())
+}).then(response => response.json())
     .then(data => {
-        if(!data.success){
+        if (!data.success) {
             window.location.href = 'index.html';
         }
     });
-
 
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
@@ -146,7 +145,7 @@ document.getElementById('logoutButton').addEventListener('click', function () {
         },
         credentials: 'include',
     }).then(response => response.json())
-    .then(data => {
-    });
+        .then(data => {
+        });
     window.location.href = 'index.html';
 });
