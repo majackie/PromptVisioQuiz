@@ -79,18 +79,18 @@ const verifyToken = (req, res, next) => {
     });
 };
 
-app.get('/admin/users', verifyToken, (req, res) => {
-    console.log("received request for /admin/users")
+app.get('/admin/user_accounts', verifyToken, (req, res) => {
+    console.log("received request for /admin/user_accounts")
     // Check if the role is admin
     if (req.user.role === 'admin') {
-        // Query to get all users
-        pool.query('SELECT id, username, role FROM users', (err, result) => {
+        // Query to get all user_accounts
+        pool.query('SELECT id, username, role FROM user_accounts', (err, result) => {
             if (err) {
                 console.error(err);
                 res.status(500).json({ success: false });
             } else {
-                // If successful, send the list of users
-                res.json({ success: true, users: result.rows });
+                // If successful, send the list of user_accounts
+                res.json({ success: true, user_accounts: result.rows });
             }
         });
     } else {
@@ -99,7 +99,7 @@ app.get('/admin/users', verifyToken, (req, res) => {
     }
 });
 
-app.put('/admin/users/:userId/role', verifyToken, async (req, res) => {
+app.put('/admin/user_accounts/:userId/role', verifyToken, async (req, res) => {
     const userIdToUpdate = req.params.userId;
     const newRole = req.body.newRole;
 
@@ -115,7 +115,7 @@ app.put('/admin/users/:userId/role', verifyToken, async (req, res) => {
 
     // Your logic to update the user's role in the database
     try {
-        const result = await pool.query('UPDATE users SET role = $1 WHERE id = $2', [newRole, userIdToUpdate]);
+        const result = await pool.query('UPDATE user_accounts SET role = $1 WHERE id = $2', [newRole, userIdToUpdate]);
 
         if (result.rowCount > 0) {
             res.json({ success: true, message: 'User role updated successfully' });
@@ -129,7 +129,7 @@ app.put('/admin/users/:userId/role', verifyToken, async (req, res) => {
 });
 
 // Route to delete a user by ID
-app.delete('/admin/users/:userId', verifyToken, async (req, res) => {
+app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
     const userIdToDelete = req.params.userId;
 
     // Check if the requesting user is an admin
@@ -139,7 +139,7 @@ app.delete('/admin/users/:userId', verifyToken, async (req, res) => {
 
     // Your logic to delete the user from the database
     try {
-        const result = await pool.query('DELETE FROM users WHERE id = $1', [userIdToDelete]);
+        const result = await pool.query('DELETE FROM user_accounts WHERE id = $1', [userIdToDelete]);
 
         if (result.rowCount > 0) {
             res.json({ success: true, message: 'User deleted successfully' });
@@ -278,13 +278,13 @@ app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
     // Query to check if the password matches the one in the database and get the role
-    pool.query('SELECT password = crypt($1, password) AS password_matches, role FROM users WHERE username = $2', [password, username], (err, result) => {
+    pool.query('SELECT password = crypt($1, password) AS password_matches, role FROM user_accounts WHERE username = $2', [password, username], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).json({ success: false });
         } else if (result.rows.length > 0 && result.rows[0].password_matches) {
             // If the password matches, generate a JWT
-            const userId = result.rows[0].id; // Assuming there's an 'id' column in your users table
+            const userId = result.rows[0].id; // Assuming there's an 'id' column in your user_accounts table
             const userRole = result.rows[0].role;
 
             const token = jwt.sign({ userId, username, role: userRole }, secretKey, { expiresIn: '1h' });
@@ -322,12 +322,12 @@ app.get('/admin', verifyToken, (req, res) => {
 // Route for registration
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
-    const role = 'user'; // default role for new users
-    const correct = 0; // default correct for new users
-    const incorrect = 0; // default incorrect for new users
+    const role = 'user'; // default role for new user_accounts
+    const correct = 0; // default correct for new user_accounts
+    const incorrect = 0; // default incorrect for new user_accounts
 
     // Query to check if the username already exists
-    pool.query('SELECT * FROM users WHERE username = $1', [username], (err, result) => {
+    pool.query('SELECT * FROM user_accounts WHERE username = $1', [username], (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).json({ success: false });
@@ -336,7 +336,7 @@ app.post('/register', (req, res) => {
             res.json({ success: false });
         } else {
             // If the username doesn't exist, create a new user
-            pool.query('INSERT INTO users (username, password, role, correct, incorrect) VALUES ($1, crypt($2, gen_salt(\'bf\')), $3, $4, $5)', [username, password, role, correct, incorrect], (err, result) => {
+            pool.query('INSERT INTO user_accounts (username, password, role, correct, incorrect) VALUES ($1, crypt($2, gen_salt(\'bf\')), $3, $4, $5)', [username, password, role, correct, incorrect], (err, result) => {
                 if (err) {
                     console.error(err);
                     res.status(500).json({ success: false });
@@ -356,7 +356,7 @@ async function checkApiCount(username) {
         // Using template string for the SQL query
         const sql = `
             SELECT api_count
-            FROM users
+            FROM user_accounts
             WHERE username = $1
         `;
 
