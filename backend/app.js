@@ -323,8 +323,6 @@ app.get('/admin', verifyToken, (req, res) => {
 app.post('/register', (req, res) => {
     const { username, password } = req.body;
     const role = 'user'; // default role for new user_accounts
-    const correct = 0; // default correct for new user_accounts
-    const incorrect = 0; // default incorrect for new user_accounts
 
     // Query to check if the username already exists
     pool.query('SELECT * FROM user_accounts WHERE username = $1', [username], (err, result) => {
@@ -336,7 +334,7 @@ app.post('/register', (req, res) => {
             res.json({ success: false });
         } else {
             // If the username doesn't exist, create a new user
-            pool.query('INSERT INTO user_accounts (username, password, role, correct, incorrect) VALUES ($1, crypt($2, gen_salt(\'bf\')), $3, $4, $5)', [username, password, role, correct, incorrect], (err, result) => {
+            pool.query('INSERT INTO user_accounts (username, password, role) VALUES ($1, crypt($2, gen_salt(\'bf\')), $3)', [username, password, role], (err, result) => {
                 if (err) {
                     console.error(err);
                     res.status(500).json({ success: false });
