@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
             userContainer.appendChild(userElement);
         });
     }
-    
+
     document.getElementById('deleteUserForm').addEventListener('submit', function (event) {
         event.preventDefault();
 
@@ -102,36 +102,50 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    
-        // Form submission event for updating user role
-        document.getElementById('updateUserRoleForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-    
-            // Get the user ID to update
-            const userIdToUpdate = document.getElementById('userIdToUpdate').value;
-    
-            // Get the selected role from the radio buttons
-            const userRole = document.querySelector('input[name="userRole"]:checked').value;
-    
-            // Make a request to update the role of the user with the specified ID
-            fetch(url + '/admin/user_accounts/' + userIdToUpdate + '/role', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ newRole: userRole }),
-            }).then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('User role updated successfully');
-                        // Refresh the list of user_accounts after role update
-                        document.getElementById('getAllUsersButton').click();
-                    } else {
-                        console.error('Failed to update user role');
-                    }
-                });
+
+    // Form submission event for updating user role
+    document.getElementById('updateUserRoleForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Get the user ID to update
+        const userIdToUpdate = document.getElementById('userIdToUpdate').value;
+
+        // Get the selected role from the radio buttons
+        const userRole = document.querySelector('input[name="userRole"]:checked').value;
+
+        // Make a request to update the role of the user with the specified ID
+        fetch(url + '/admin/user_accounts/' + userIdToUpdate + '/role', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ newRole: userRole }),
+        }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('User role updated successfully');
+                    // Refresh the list of user_accounts after role update
+                    document.getElementById('getAllUsersButton').click();
+                } else {
+                    console.error('Failed to update user role');
+                }
+            });
+    });
+
+
+});
+
+// Event listener for the logout button
+document.getElementById('logoutButton').addEventListener('click', function () {
+    fetch(url + '/logout', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    }).then(response => response.json())
+        .then(data => {
         });
-
-
+    window.location.href = 'index.html';
 });
