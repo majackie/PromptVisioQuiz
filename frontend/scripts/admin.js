@@ -103,4 +103,40 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
+    document.addEventListener('DOMContentLoaded', function () {
+        // ... (existing code) ...
+    
+        // Form submission event for updating user role
+        document.getElementById('updateUserRoleForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+    
+            // Get the user ID to update
+            const userIdToUpdate = document.getElementById('userIdToUpdate').value;
+    
+            // Get the selected role from the radio buttons
+            const userRole = document.querySelector('input[name="userRole"]:checked').value;
+    
+            // Make a request to update the role of the user with the specified ID
+            fetch(url + '/admin/users/' + userIdToUpdate + '/role', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token, // Include your JWT token
+                },
+                credentials: 'include',
+                body: JSON.stringify({ newRole: userRole }),
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('User role updated successfully');
+                        // Refresh the list of users after role update
+                        document.getElementById('getAllUsersButton').click();
+                    } else {
+                        console.error('Failed to update user role');
+                    }
+                });
+        });
+    });
+
+    
 });
