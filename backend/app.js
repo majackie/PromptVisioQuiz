@@ -169,8 +169,12 @@ app.get('/model', verifyToken, async (req, res) => {
         res.status(429).send('Model is currently running, please try again later');
         return;
     }
-
-    const apiCount = checkApiCount(req.body.username);
+    const apiCount = 0;
+    if (req.user.role == 'admin'){
+        apiCount = 0;
+    }else{
+        apiCount = checkApiCount(req.body.username);
+    }
     if (apiCount > 20) {
         res.status(403).send('API limit reached, please try again later');
         return
