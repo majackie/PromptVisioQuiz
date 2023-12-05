@@ -293,16 +293,16 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         }
     };
 
-    const apiCount = checkApiCount(req.body.username);
-    console.log(messageString.CheckingAPICount);
-    if (apiCount > 20) {
-        res.status(403).send(messageString.APILimitReached);
-        return
-    }
-    else {
-        console.log(messageString.incrementApiCount);
-        incrementApiCount(req.body.username);
-    }
+    // const apiCount = checkApiCount(req.body.username);
+    // console.log(messageString.CheckingAPICount);
+    // if (apiCount > 20) {
+    //     res.status(403).send(messageString.APILimitReached);
+    //     return
+    // }
+    // else {
+    //     console.log(messageString.incrementApiCount);
+    //     incrementApiCount(req.body.username);
+    // }
     
 
     const fileName = 'titles.json';
