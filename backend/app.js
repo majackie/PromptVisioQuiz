@@ -179,9 +179,9 @@ app.get('/apiCount', verifyToken, async (req, res) => {
 
         // Execute the query
         const result = await client.query(sql, [req.body.username]);
-
+        const count = result.rows[0].api_count;
         // Return the api_count value
-        res.send({ count: result.rows[0].api_count });
+        res.send({ count: count });
 
 
 });
