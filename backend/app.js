@@ -94,7 +94,7 @@ app.get('/admin/user_accounts', verifyToken, async (req, res) => {
     // Check if the role is admin
     if (req.user.role === 'admin') {
         // Query to get all user_accounts joined with user_details
-        pool.query('SELECT user_accounts.id, user_accounts.username, user_accounts.role, user_details.api_count, user_details.correct, user_details.incorrect FROM user_accounts LEFT JOIN user_details ON user_accounts.id = user_details.user_id', (err, result) => {
+        pool.query('SELECT user_accounts.id, user_accounts.username, user_accounts.role, user_details.api_count, user_details.correct, user_details.incorrect FROM user_accounts LEFT JOIN user_details ON user_accounts.id = user_details.user_id ORDER BY user_accounts.id', (err, result) => {
             if (err) {
                 console.error(err);
                 res.status(500).json({ success: false });
