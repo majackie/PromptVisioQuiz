@@ -163,27 +163,37 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
 });
 
 app.get('/apiCount', verifyToken, async (req, res) => {
-    // await incrementSystemDetails(req.route.path);
-
-    // Get the api_count value from the database
-    const client = await pool.connect();
-
+    try {
+        // Get the api_count value from the database
+        const client = await pool.connect();
 
         // Using template string for the SQL query
         const sql = `
-        SELECT user_details.api_count
-        FROM user_details
-        JOIN user_accounts ON user_details.id = user_accounts.id
-        WHERE user_accounts.username = $1;
+            SELECT user_details.api_count
+            FROM user_details
+            JOIN user_accounts ON user_details.id = user_accounts.id
+            WHERE user_accounts.username = $1;
         `;
 
         // Execute the query
         const result = await client.query(sql, [req.body.username]);
-        const count = result.rows[0].api_count;
-        // Return the api_count value
-        res.send({ count: count });
 
-
+        // Check if any rows were returned
+        if (result.rows.length > 0) {
+            const count = result.rows[0].api_count;
+            // Return the api_count value
+            res.send({ count: count });
+        } else {
+            // Handle the case when no rows are returned (username not found)
+            res.status(404).send({ error: 'Username not found' });
+        }
+    } catch (error) {
+        console.error('Error in /apiCount route:', error);
+        res.status(500).send('Internal Server Error');
+    } finally {
+        // Ensure to release the client back to the pool
+        client.release();
+    }
 });
 
 // Route to run the model
