@@ -20,7 +20,7 @@ fetch(url + '/isLoggedIn', {
 
 function displayApiCount() {
     // Make a request to get the API count
-    fetch(url + '/apiCount', {
+    fetch('https://promptvisioquizbackend.onrender.com/apiCount', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -35,6 +35,9 @@ function displayApiCount() {
                 // Set the API count
                 apiCountElement.textContent = data.count;
             
+        })
+        .catch(error => {
+            console.error('Error:', error)
         });
 }
     
