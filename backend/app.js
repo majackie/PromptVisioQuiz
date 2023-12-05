@@ -167,7 +167,7 @@ app.get('/apiCount', verifyToken, async (req, res) => {
     // Get the api_count value from the database
     const client = await pool.connect();
 
-    try {
+
         // Using template string for the SQL query
         const sql = `
         SELECT user_details.api_count
@@ -181,14 +181,7 @@ app.get('/apiCount', verifyToken, async (req, res) => {
 
         // Return the api_count value
         res.send({ count: result.rows[0].api_count });
-    } catch (error) {
-        // Handle errors
-        console.error('Error executing query:', error.message);
-        throw error;
-    } finally {
-        // Release the client back to the pool
-        client.release();
-    }
+
 
 });
 
