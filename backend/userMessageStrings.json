@@ -1,0 +1,44 @@
+{
+"tokenMissingMessage":"Unauthorized: Token missing",
+"invalidTokenMessage":"Forbidden: Invalid token",
+"insufficientPrivilegesMessage":"Forbidden: Insufficient privileges",
+"invalidRoleMessage":"Bad Request: Invalid role",
+"successfulUserRoleUpdateMessage":"User role updated successfully",
+"userNotFoundMessage":"User not found",
+"internalServerErrorMessage":"Internal Server Error",
+"successfulUserDeletionMessage":"User deleted successfully",
+"modelRunningMessage":"Model is currently running, please try again later",
+"startingModelMessage":"Starting model",
+"modelRunSuccess":"Model run successfully",
+"modelError":"An error occurred",
+"executingQueryError":"Error executing query:",
+"executingUpdateQueryError":"Error executing update query:",
+"serverIsRunningOnMessage":"Server is running on port ",
+"systemDetailsError":"Server error",
+"APILimitReached":"API limit reached, please try again later",
+"CheckingAPICount":"checking api count",
+"incrementAPICount":"incrementing api count",
+
+
+
+"loginFetchErrorMessage":"Network response was not ok",
+"loginFailedErrorMessage":"Login failed. Please check your credentials.",
+
+
+
+"pleaseSelectTitleMessage":"Please select a title.",
+
+
+
+"successfulRegistrationMessage":"Registration successful!",
+"registrationFailedMessage":"Registration failed.",
+
+
+
+"failedToGetUsersMessage":"Failed to get user_accounts",
+"userDeletedSuccessfully":"User deleted successfully",
+"userDeleteFailed":"Failed to delete user",
+"userRoleUpdatedSuccessfully":"User role updated successfully",
+"failedToUpdateUserRole":"Failed to update user role",
+"failedToGetSystemDetails":"Failed to get system details"
+}

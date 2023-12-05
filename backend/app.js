@@ -12,10 +12,15 @@ const http = require('http');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const messageString = require('./userMessageStrings.json');
 
 const secretKey = 'your_secret_key';
 // Flag to check if model is running
 let isModelRunning = false;
+
+const userMessageStrings = require('./userMessageStrings.json');
+
+
 
 // Set up PostgreSQL connection
 const pool = new pg.Pool({
@@ -26,8 +31,8 @@ const pool = new pg.Pool({
     port: 5432,
 });
 
-const url = 'https://promptvisioquizfrontend.onrender.com';
-// const url = 'http://127.0.0.1:5500';
+// const url = 'https://promptvisioquizfrontend.onrender.com';
+const url = 'http://127.0.0.1:5500';
 
 // Middleware for CORS and JSON parsing
 app.use(cors({
@@ -63,13 +68,13 @@ const verifyToken = (req, res, next) => {
 
     // Check if the token is missing
     if (!token) {
-        return res.status(401).json({ success: false, message: 'Unauthorized: Token missing' });
+        return res.status(401).json({ success: false, message: messageString.tokenMissingMessage });
     }
 
     // Verify the token using your secret key
     jwt.verify(token, secretKey, (err, decoded) => {
         if (err) {
-            return res.status(403).json({ success: false, message: 'Forbidden: Invalid token' });
+            return res.status(403).json({ success: false, message: messageString.invalidTokenMessage });
         }
 
         // If the token is valid, set the decoded user information in the request object
@@ -79,6 +84,10 @@ const verifyToken = (req, res, next) => {
         next();
     });
 };
+
+app.get('/jsonContent', (req, res) => {
+    res.json(userMessageStrings);
+  });
 
 app.get('/admin/user_accounts', verifyToken, async (req, res) => {
     await incrementSystemDetails(req.route.path);
@@ -110,12 +119,12 @@ app.put('/admin/user_accounts/:userId/role', verifyToken, async (req, res) => {
 
     // Check if the requesting user is an admin
     if (req.user.role !== 'admin') {
-        return res.status(403).json({ success: false, message: 'Forbidden: Insufficient privileges' });
+        return res.status(403).json({ success: false, message: messageString.insufficientPrivilegesMessage });
     }
 
     // Check if the new role is valid (either 'user' or 'admin')
     if (newRole !== 'user' && newRole !== 'admin') {
-        return res.status(400).json({ success: false, message: 'Bad Request: Invalid role' });
+        return res.status(400).json({ success: false, message: messageString.invalidRoleMessage });
     }
 
     // Your logic to update the user's role in the database
@@ -123,13 +132,13 @@ app.put('/admin/user_accounts/:userId/role', verifyToken, async (req, res) => {
         const result = await pool.query('UPDATE user_accounts SET role = $1 WHERE id = $2', [newRole, userIdToUpdate]);
 
         if (result.rowCount > 0) {
-            res.json({ success: true, message: 'User role updated successfully' });
+            res.json({ success: true, message: messageString.successfulUserRoleUpdateMessage });
         } else {
-            res.status(404).json({ success: false, message: 'User not found' });
+            res.status(404).json({ success: false, message: messageString.userNotFoundMessage });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: messageString.internalServerErrorMessage });
     }
 });
 
@@ -141,7 +150,7 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
 
     // Check if the requesting user is an admin
     if (req.user.role !== 'admin') {
-        return res.status(403).json({ success: false, message: 'Forbidden: Insufficient privileges' });
+        return res.status(403).json({ success: false, message: messageString.insufficientPrivilegesMessage });
     }
 
     // Your logic to delete the user from the database
@@ -149,13 +158,13 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
         const result = await pool.query('DELETE FROM user_accounts WHERE id = $1', [userIdToDelete]);
 
         if (result.rowCount > 0) {
-            res.json({ success: true, message: 'User deleted successfully' });
+            res.json({ success: true, message: messageString.successfulUserDeletionMessage });
         } else {
-            res.status(404).json({ success: false, message: 'User not found' });
+            res.status(404).json({ success: false, message: messageString.userNotFoundMessage });
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+        res.status(500).json({ success: false, message: messageString.internalServerErrorMessage });
     }
 });
 
@@ -166,7 +175,7 @@ app.get('/model', verifyToken, async (req, res) => {
     console.log('Received request for /model');
 
     if (isModelRunning) {
-        res.status(429).send('Model is currently running, please try again later');
+        res.status(429).send(messageString.modelRunningMessage);
         return;
     }
     const apiCount = 0;
@@ -176,7 +185,7 @@ app.get('/model', verifyToken, async (req, res) => {
         apiCount = checkApiCount(req.body.username);
     }
     if (apiCount > 20) {
-        res.status(403).send('API limit reached, please try again later');
+        res.status(403).send(messageString.APILimitReached);
         return
     }
     else {
@@ -185,7 +194,7 @@ app.get('/model', verifyToken, async (req, res) => {
     }
 
     isModelRunning = true;
-    console.log('Starting model');
+    console.log(messageString.startingModelMessage);
 
     try {
         // Wrap your model running code in a new Promise
@@ -225,10 +234,10 @@ app.get('/model', verifyToken, async (req, res) => {
                 .catch((err) => reject(err));
         });
 
-        res.send('Model run successfully');
+        res.send(messageString.modelRunSuccess);
     } catch (error) {
         console.error(error);
-        res.status(500).send('An error occurred');
+        res.status(500).send(messageString.modelError);
     } finally {
         isModelRunning = false;
     }
@@ -247,13 +256,13 @@ app.get('/titles', verifyToken, async (req, res, next) => {
     };
 
     const apiCount = checkApiCount(req.body.username);
-    console.log('checking api count');
+    console.log(messageString.CheckingAPICount);
     if (apiCount > 20) {
-        res.status(403).send('API limit reached, please try again later');
+        res.status(403).send(messageString.APILimitReached);
         return
     }
     else {
-        console.log('incrementing api count');
+        console.log(messageString.incrementApiCount);
         incrementApiCount(req.body.username);
     }
 
@@ -390,7 +399,7 @@ app.get('/admin/system_details', async (req, res) => {
         res.json({ success: true, system_details: results.rows });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(500).json({ success: false, message: messageString.systemDetailsError });
     }
 });
 
@@ -413,7 +422,7 @@ async function checkApiCount(username) {
         return result.rows[0].api_count;
     } catch (error) {
         // Handle errors
-        console.error('Error executing query:', error.message);
+        console.error(messageString.executingQueryError, error.message);
         throw error;
     } finally {
         // Release the client back to the pool
@@ -440,7 +449,7 @@ async function incrementApiCount(username) {
         return;
     } catch (error) {
         // Handle errors
-        console.error('Error executing update query:', error.message);
+        console.error(messageString.executingUpdateQueryError, error.message);
         throw error;
     } finally {
         // Release the client back to the pool
@@ -458,5 +467,5 @@ async function incrementSystemDetails(endpoint) {
 
 // Start the server
 app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is running on port ' + (process.env.PORT || 3000));
+    console.log(messageString.serverIsRunningOnMessage + (process.env.PORT || 3000));
 });
