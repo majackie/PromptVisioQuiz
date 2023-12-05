@@ -170,14 +170,15 @@ app.get('/model', verifyToken, async (req, res) => {
         return;
     }
 
-    // const apiCount = checkApiCount(req.body.username);
-    // if (apiCount > 20) {
-    //     res.status(403).send('API limit reached, please try again later');
-    //     return
-    // }
-    // else {
-    //     incrementApiCount(req.body.username);
-    // }
+    const apiCount = checkApiCount(req.body.username);
+    if (apiCount > 20) {
+        res.status(403).send('API limit reached, please try again later');
+        return
+    }
+    else {
+
+        incrementApiCount(req.body.username);
+    }
 
     isModelRunning = true;
     console.log('Starting model');
@@ -240,6 +241,17 @@ app.get('/titles', verifyToken, async (req, res, next) => {
             'x-sent': true,
         }
     };
+
+    const apiCount = checkApiCount(req.body.username);
+    console.log('checking api count');
+    if (apiCount > 20) {
+        res.status(403).send('API limit reached, please try again later');
+        return
+    }
+    else {
+        console.log('incrementing api count');
+        incrementApiCount(req.body.username);
+    }
 
     const fileName = 'titles.json';
     // Send the file
@@ -384,9 +396,10 @@ async function checkApiCount(username) {
     try {
         // Using template string for the SQL query
         const sql = `
-            SELECT api_count
-            FROM user_accounts
-            WHERE username = $1
+        SELECT user_details.api_count
+        FROM user_details
+        JOIN user_accounts ON user_details.id = user_accounts.id
+        WHERE user_accounts.username = $1;
         `;
 
         // Execute the query
@@ -410,17 +423,17 @@ async function incrementApiCount(username) {
     try {
         // Increment the api_count by 1
         const updateSql = `
-            UPDATE user_details
-            SET api_count = api_count + 1
-            WHERE username = $1
-            RETURNING api_count
+        UPDATE user_details
+        SET api_count = api_count + 1
+        FROM user_accounts
+        WHERE user_details.id = user_accounts.id
+          AND user_accounts.username = $1;
         `;
 
         // Execute the update query
         const result = await client.query(updateSql, [username]);
-
         // Return the updated api_count value
-        return result.rows[0].api_count;
+        return;
     } catch (error) {
         // Handle errors
         console.error('Error executing update query:', error.message);
