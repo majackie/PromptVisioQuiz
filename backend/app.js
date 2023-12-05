@@ -293,7 +293,7 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         }
     };
 
-    const apiCount = checkApiCount(req.body.username);
+    // const apiCount = checkApiCount(req.body.username);
 
     // const apiCount = checkApiCount(req.body.username);
     // console.log(messageString.CheckingAPICount);
