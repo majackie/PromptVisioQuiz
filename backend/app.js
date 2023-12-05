@@ -292,7 +292,6 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         }
     };
 
-<<<<<<< HEAD
     const apiCount = checkApiCount(req.body.username);
     console.log(messageString.CheckingAPICount);
     if (apiCount > 20) {
@@ -303,9 +302,7 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         console.log(messageString.incrementApiCount);
         incrementApiCount(req.body.username);
     }
-=======
     
->>>>>>> 5dfa7da53714d28e2765314d04741ecd37f088fe
 
     const fileName = 'titles.json';
     // Send the file
