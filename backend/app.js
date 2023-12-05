@@ -217,19 +217,19 @@ app.get('/model', verifyToken, async (req, res) => {
     }
 
 
-    let apiCount = 0;
-    if (req.user.role == 'admin'){
-        apiCount = 0;
-    }else{
-        apiCount = checkApiCount(req.user.username);
-    }
-    if (apiCount > 20) {
-        res.status(403).send(messageString.APILimitReached);
-        return
-    }
-    else {
-        incrementApiCount(req.user.username);
-    }
+    // let apiCount = 0;
+    // if (req.user.role == 'admin'){
+    //     apiCount = 0;
+    // }else{
+    //     apiCount = checkApiCount(req.user.username);
+    // }
+    // if (apiCount > 20) {
+    //     res.status(403).send(messageString.APILimitReached);
+    //     return
+    // }
+    // else {
+    //     incrementApiCount(req.user.username);
+    // }
 
     isModelRunning = true;
     console.log(messageString.startingModelMessage);
