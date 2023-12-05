@@ -31,8 +31,8 @@ const pool = new pg.Pool({
     port: 5432,
 });
 
-// const url = 'https://promptvisioquizfrontend.onrender.com';
-const url = 'http://127.0.0.1:5500';
+const url = 'https://promptvisioquizfrontend.onrender.com';
+// const url = 'http://127.0.0.1:5500';
 
 // Middleware for CORS and JSON parsing
 app.use(cors({
