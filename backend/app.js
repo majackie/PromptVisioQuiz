@@ -293,6 +293,8 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         }
     };
 
+    const apiCount = checkApiCount(req.body.username);
+
     // const apiCount = checkApiCount(req.body.username);
     // console.log(messageString.CheckingAPICount);
     // if (apiCount > 20) {
@@ -442,8 +444,8 @@ app.get('/admin/system_details', async (req, res) => {
     }
 });
 
-async function checkApiCount(username) {
-    const client = await pool.connect();
+function checkApiCount(username) {
+    const client = pool.connect();
 
     try {
         // Using template string for the SQL query
@@ -455,7 +457,7 @@ async function checkApiCount(username) {
         `;
 
         // Execute the query
-        const result = await client.query(sql, [username]);
+        const result = client.query(sql, [username]);
 
         // Return the api_count value
         return result.rows[0].api_count;
