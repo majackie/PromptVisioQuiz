@@ -19,6 +19,7 @@ fetch(url + '/isLoggedIn', {
         }
     });
 
+<<<<<<< HEAD
 fetch(url + '/jsonContent')
     .then(response => {
       if (!response.ok) {
@@ -34,6 +35,31 @@ fetch(url + '/jsonContent')
       console.error(error);
     });
 
+=======
+function displayApiCount() {
+    // Make a request to get the API count
+    fetch('https://promptvisioquizbackend.onrender.com/apiCount', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    }).then(response => response.json())
+        .then(data => {
+
+                // Get the API count element
+                const apiCountElement = document.getElementById('apiCount');
+                console.log(data.count)
+                // Set the API count
+                apiCountElement.textContent = data.count;
+            
+        })
+        .catch(error => {
+            console.error('Error:', error)
+        });
+}
+    
+>>>>>>> 5dfa7da53714d28e2765314d04741ecd37f088fe
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
     // Fetch the model from the API

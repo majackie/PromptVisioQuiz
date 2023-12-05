@@ -42,12 +42,15 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
+// Additional CORS headers
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', url);
+    res.header('Access-Control-Allow-Origin', 'https://promptvisioquizfrontend.onrender.com');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
+
+
 
 app.use(express.json());
 app.use(cookieParser());
@@ -168,6 +171,40 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
     }
 });
 
+app.get('/apiCount', verifyToken, async (req, res) => {
+    try {
+        // Get the api_count value from the database
+        const client = await pool.connect();
+
+        // Using template string for the SQL query
+        const sql = `
+            SELECT user_details.api_count
+            FROM user_details
+            JOIN user_accounts ON user_details.id = user_accounts.id
+            WHERE user_accounts.username = $1;
+        `;
+
+        // Execute the query
+        const result = await client.query(sql, [req.body.username]);
+
+        // Check if any rows were returned
+        if (result.rows.length > 0) {
+            const count = result.rows[0].api_count;
+            // Return the api_count value
+            res.send({ count: count });
+        } else {
+            // Handle the case when no rows are returned (username not found)
+            res.status(404).send({ error: 'Username not found' });
+        }
+    } catch (error) {
+        console.error('Error in /apiCount route:', error);
+        res.status(500).send('Internal Server Error');
+    } finally {
+        // Ensure to release the client back to the pool
+        client.release();
+    }
+});
+
 // Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
     await incrementSystemDetails(req.route.path);
@@ -178,7 +215,7 @@ app.get('/model', verifyToken, async (req, res) => {
         res.status(429).send(messageString.modelRunningMessage);
         return;
     }
-    const apiCount = 0;
+    let apiCount = 0;
     if (req.user.role == 'admin'){
         apiCount = 0;
     }else{
@@ -189,7 +226,7 @@ app.get('/model', verifyToken, async (req, res) => {
         return
     }
     else {
-
+        console.log('incrementing api count');
         incrementApiCount(req.body.username);
     }
 
@@ -255,6 +292,7 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         }
     };
 
+<<<<<<< HEAD
     const apiCount = checkApiCount(req.body.username);
     console.log(messageString.CheckingAPICount);
     if (apiCount > 20) {
@@ -265,6 +303,9 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         console.log(messageString.incrementApiCount);
         incrementApiCount(req.body.username);
     }
+=======
+    
+>>>>>>> 5dfa7da53714d28e2765314d04741ecd37f088fe
 
     const fileName = 'titles.json';
     // Send the file
