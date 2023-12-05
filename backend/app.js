@@ -195,7 +195,7 @@ app.get('/model', verifyToken, async (req, res) => {
         res.status(429).send('Model is currently running, please try again later');
         return;
     }
-    const apiCount = 0;
+    let apiCount = 0;
     if (req.user.role == 'admin'){
         apiCount = 0;
     }else{
