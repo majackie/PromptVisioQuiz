@@ -18,9 +18,8 @@ fetch(url + '/isLoggedIn', {
         }
     });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const apiCount = document.getElementById('apiCount');
-
+function displayApiCount() {
+    // Make a request to get the API count
     fetch(url + '/apiCount', {
         method: 'GET',
         headers: {
@@ -29,9 +28,14 @@ document.addEventListener('DOMContentLoaded', function () {
         credentials: 'include',
     }).then(response => response.json())
         .then(data => {
-            apiCount.textContent = data.count;
+            if (data.success) {
+                // Get the API count element
+                const apiCountElement = document.getElementById('apiCount');
+                // Set the API count
+                apiCountElement.textContent = data.count;
+            }
         });
-    });
+}
     
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
