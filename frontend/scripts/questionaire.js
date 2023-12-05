@@ -18,6 +18,21 @@ fetch(url + '/isLoggedIn', {
         }
     });
 
+document.addEventListener('DOMContentLoaded', function () {
+    const apiCount = document.getElementById('apiCount');
+
+    fetch(url + '/apiCount', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    }).then(response => response.json())
+        .then(data => {
+            apiCount.textContent = data.count;
+        });
+    });
+    
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
     // Fetch the model from the API

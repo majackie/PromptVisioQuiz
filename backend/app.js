@@ -159,6 +159,37 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
     }
 });
 
+app.get('/apiCount', verifyToken, async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
+    // Get the api_count value from the database
+    const client = await pool.connect();
+
+    try {
+        // Using template string for the SQL query
+        const sql = `
+        SELECT user_details.api_count
+        FROM user_details
+        JOIN user_accounts ON user_details.id = user_accounts.id
+        WHERE user_accounts.username = $1;
+        `;
+
+        // Execute the query
+        const result = await client.query(sql, [req.body.username]);
+
+        // Return the api_count value
+        res.send({ count: result.rows[0].api_count });
+    } catch (error) {
+        // Handle errors
+        console.error('Error executing query:', error.message);
+        throw error;
+    } finally {
+        // Release the client back to the pool
+        client.release();
+    }
+
+});
+
 // Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
     await incrementSystemDetails(req.route.path);
@@ -180,7 +211,7 @@ app.get('/model', verifyToken, async (req, res) => {
         return
     }
     else {
-
+        console.log('incrementing api count');
         incrementApiCount(req.body.username);
     }
 
@@ -246,16 +277,7 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         }
     };
 
-    const apiCount = checkApiCount(req.body.username);
-    console.log('checking api count');
-    if (apiCount > 20) {
-        res.status(403).send('API limit reached, please try again later');
-        return
-    }
-    else {
-        console.log('incrementing api count');
-        incrementApiCount(req.body.username);
-    }
+    
 
     const fileName = 'titles.json';
     // Send the file
