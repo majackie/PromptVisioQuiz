@@ -80,7 +80,9 @@ const verifyToken = (req, res, next) => {
     });
 };
 
-app.get('/admin/user_accounts', verifyToken, (req, res) => {
+app.get('/admin/user_accounts', verifyToken, async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
     console.log("received request for /admin/user_accounts")
     // Check if the role is admin
     if (req.user.role === 'admin') {
@@ -101,6 +103,8 @@ app.get('/admin/user_accounts', verifyToken, (req, res) => {
 });
 
 app.put('/admin/user_accounts/:userId/role', verifyToken, async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
     const userIdToUpdate = req.params.userId;
     const newRole = req.body.newRole;
 
@@ -131,6 +135,8 @@ app.put('/admin/user_accounts/:userId/role', verifyToken, async (req, res) => {
 
 // Route to delete a user by ID
 app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
     const userIdToDelete = req.params.userId;
 
     // Check if the requesting user is an admin
@@ -155,6 +161,8 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
 
 // Route to run the model
 app.get('/model', verifyToken, async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
     console.log('Received request for /model');
 
     if (isModelRunning) {
@@ -162,15 +170,14 @@ app.get('/model', verifyToken, async (req, res) => {
         return;
     }
 
-    const apiCount = checkApiCount(req.body.username);
-
-    if (apiCount > 20) {
-        res.status(403).send('API limit reached, please try again later');
-        return
-    }
-    else {
-        incrementApiCount(req.body.username);
-    }
+    // const apiCount = checkApiCount(req.body.username);
+    // if (apiCount > 20) {
+    //     res.status(403).send('API limit reached, please try again later');
+    //     return
+    // }
+    // else {
+    //     incrementApiCount(req.body.username);
+    // }
 
     isModelRunning = true;
     console.log('Starting model');
@@ -222,7 +229,8 @@ app.get('/model', verifyToken, async (req, res) => {
     }
 });
 
-app.get('/titles', verifyToken, (req, res, next) => {
+app.get('/titles', verifyToken, async (req, res, next) => {
+    await incrementSystemDetails(req.route.path);
     // Options for sending the file
     const options = {
         root: path.join(__dirname, 'results'),
@@ -245,7 +253,9 @@ app.get('/titles', verifyToken, (req, res, next) => {
 });
 
 // Route to get image
-app.get('/image', verifyToken, (req, res, next) => {
+app.get('/image', verifyToken, async (req, res, next) => {
+    await incrementSystemDetails(req.route.path);
+
     // Options for sending the file
     const options = {
         root: path.join(__dirname, 'results'),
@@ -267,12 +277,16 @@ app.get('/image', verifyToken, (req, res, next) => {
     });
 });
 
-app.get('/isLoggedIn', verifyToken, (req, res) => {
+app.get('/isLoggedIn', verifyToken, async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
     // Send success
     res.json({ success: true });
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
     const { username, password } = req.body;
 
     // Query to check if the password matches the one in the database and get the role
@@ -301,12 +315,17 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
+    // async await cannot log user out
+    incrementSystemDetails(req.route.path);
+    
     // Clear the token in the cookie
     res.cookie('token', 'clear', { httpOnly: true, secure: true, maxAge: 0, sameSite: 'None' });
     res.json({ success: true });
 });
 
-app.get('/admin', verifyToken, (req, res) => {
+app.get('/admin', verifyToken, async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
     // Check if the role is admin
     if (req.user.role === 'admin') {
         // If the role is admin, send success
@@ -318,7 +337,9 @@ app.get('/admin', verifyToken, (req, res) => {
 });
 
 // Route for registration
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
     const { username, password } = req.body;
     const role = 'user'; // default role for new user_accounts
 
@@ -343,6 +364,18 @@ app.post('/register', (req, res) => {
             });
         }
     });
+});
+
+app.get('/admin/system_details', async (req, res) => {
+    await incrementSystemDetails(req.route.path);
+
+    try {
+        const results = await pool.query('SELECT * FROM system_details ORDER BY id');
+        res.json({ success: true, system_details: results.rows });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 });
 
 async function checkApiCount(username) {
@@ -395,6 +428,14 @@ async function incrementApiCount(username) {
     } finally {
         // Release the client back to the pool
         client.release();
+    }
+}
+
+async function incrementSystemDetails(endpoint) {
+    try {
+        await pool.query(`UPDATE system_details SET requests = requests + 1 WHERE endpoint = $1`, [endpoint]);
+    } catch (err) {
+        console.error(err);
     }
 }
 

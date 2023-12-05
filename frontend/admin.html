@@ -12,30 +12,26 @@
 <body>
     <div class="container">
         <h1>Admin</h1>
-        
-        <button id="logoutButton">Logout</button>
 
+        <button id="logoutButton">Logout</button>
         <button id="goToQuestionaireButton">Go to Questionaire</button>
 
-        <!-- New buttons for admin actions -->
-        <button id="getAllUsersButton">Get All Users</button>
-        
-        <!-- Container to display users -->
-        <div id="userContainer">
-            <h2>Users</h2>
-        </div>
-        <!-- Form to delete a user -->
+        <div id="userContainer"></div>
+        <div id="systemDetailsContainer"></div>
+
+        <br>
+
         <form id="deleteUserForm">
             <label for="userIdToDelete">Enter User ID to Delete:</label>
             <input type="text" id="userIdToDelete" name="userIdToDelete" required>
             <button type="submit">Delete User</button>
         </form>
-        <!-- Form to update user role -->
+
+        <br>
+
         <form id="updateUserRoleForm">
             <label for="userIdToUpdate">Enter User ID to Update Role:</label>
             <input type="text" id="userIdToUpdate" name="userIdToUpdate" required>
-            
-            <!-- Radio buttons for user and admin roles -->
             <label>
                 <input type="radio" name="userRole" value="user" checked>
                 User
@@ -44,8 +40,7 @@
                 <input type="radio" name="userRole" value="admin">
                 Admin
             </label>
-        
-            <button type="submit">Update User Role</button>
+            <button type="submit">Update Role</button>
         </form>
     </div>
 </body>

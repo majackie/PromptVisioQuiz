@@ -22,125 +22,163 @@ fetch(url + '/admin', {
         }
     });
 
-// Set the button click event
-document.addEventListener('DOMContentLoaded', function () {
-    // Set the button click event for navigating to the questionaire page
-    const button = document.querySelector('#goToQuestionaireButton');
-    button.onclick = function () {
-        window.location.href = 'questionaire.html';
-    };
+// Set the button click event for navigating to the questionaire page
+document.querySelector('#goToQuestionaireButton').onclick = () => window.location.href = 'questionaire.html';
 
-    // New button click event for getting all user_accounts
-    document.getElementById('getAllUsersButton').onclick = function () {
-        // Make a request to get all user_accounts
-        fetch(url + '/admin/user_accounts', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-        }).then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Display the list of user_accounts
-                    displayUsers(data.users);
-                } else {
-                    console.error('Failed to get user_accounts');
-                }
-            });
-    };
+// Function to get and display user_accounts in the container
+function displayUsers() {
+    // Make a request to get all user_accounts
+    fetch(url + '/admin/user_accounts', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const userContainer = document.getElementById('userContainer');
 
-    // Function to display user_accounts in the container
-    function displayUsers(users) {
-        const userContainer = document.getElementById('userContainer');
+                // Clear previous content
+                userContainer.innerHTML = '';
 
-        // Clear previous content
-        userContainer.innerHTML = '';
+                // Create table
+                const table = document.createElement('table');
 
-        // Create table
-        const table = document.createElement('table');
+                // Create table header
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['User ID', 'Username', 'Role', 'API Count'].forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
 
-        // Create table header
-        const thead = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        ['User ID', 'Username', 'Role', 'API Count'].forEach(headerText => {
-            const th = document.createElement('th');
-            th.textContent = headerText;
-            headerRow.appendChild(th);
+                // Create and append rows for each user
+                data.users.forEach(user => {
+                    const tr = document.createElement('tr');
+                    [user.id, user.username, user.role, user.api_count].forEach(item => {
+                        const td = document.createElement('td');
+                        td.textContent = item;
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+
+                userContainer.appendChild(table);
+            } else {
+                console.error('Failed to get user_accounts');
+            }
         });
-        thead.appendChild(headerRow);
-        table.appendChild(thead);
+}
 
-        // Create and append rows for each user
-        users.forEach(user => {
-            const tr = document.createElement('tr');
-            [user.id, user.username, user.role, user.api_count].forEach(item => {
-                const td = document.createElement('td');
-                td.textContent = item;
-                tr.appendChild(td);
-            });
-            table.appendChild(tr);
+document.getElementById('deleteUserForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    // Get the user ID to delete
+    const userIdToDelete = document.getElementById('userIdToDelete').value;
+
+    // Make a request to delete the user with the specified ID
+    fetch(url + '/admin/user_accounts/' + userIdToDelete, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('User deleted successfully');
+                // Refresh the list of user_accounts after deletion
+                displayUsers();
+                displaySystemDetails();
+            } else {
+                console.error('Failed to delete user');
+            }
         });
-
-        userContainer.appendChild(table);
-    }
-
-    document.getElementById('deleteUserForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        // Get the user ID to delete
-        const userIdToDelete = document.getElementById('userIdToDelete').value;
-
-        // Make a request to delete the user with the specified ID
-        fetch(url + '/admin/user_accounts/' + userIdToDelete, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-        }).then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('User deleted successfully');
-                    // Refresh the list of user_accounts after deletion
-                    document.getElementById('getAllUsersButton').click();
-                } else {
-                    console.error('Failed to delete user');
-                }
-            });
-    });
-
-
-    // Form submission event for updating user role
-    document.getElementById('updateUserRoleForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        // Get the user ID to update
-        const userIdToUpdate = document.getElementById('userIdToUpdate').value;
-
-        // Get the selected role from the radio buttons
-        const userRole = document.querySelector('input[name="userRole"]:checked').value;
-
-        // Make a request to update the role of the user with the specified ID
-        fetch(url + '/admin/user_accounts/' + userIdToUpdate + '/role', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ newRole: userRole }),
-        }).then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('User role updated successfully');
-                    // Refresh the list of user_accounts after role update
-                    document.getElementById('getAllUsersButton').click();
-                } else {
-                    console.error('Failed to update user role');
-                }
-            });
-    });
 });
+
+// Form submission event for updating user role
+document.getElementById('updateUserRoleForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    // Get the user ID to update
+    const userIdToUpdate = document.getElementById('userIdToUpdate').value;
+
+    // Get the selected role from the radio buttons
+    const userRole = document.querySelector('input[name="userRole"]:checked').value;
+
+    // Make a request to update the role of the user with the specified ID
+    fetch(url + '/admin/user_accounts/' + userIdToUpdate + '/role', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ newRole: userRole }),
+    }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('User role updated successfully');
+                // Refresh the list of user_accounts after role update
+                displayUsers();
+                displaySystemDetails();
+            } else {
+                console.error('Failed to update user role');
+            }
+        });
+});
+
+// Function to fetch and display system details in the container
+function displaySystemDetails() {
+    // Make a request to get all system details
+    fetch(url + '/admin/system_details', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const systemDetailsContainer = document.getElementById('systemDetailsContainer');
+
+                // Clear previous content
+                systemDetailsContainer.innerHTML = '';
+
+                // Create table
+                const table = document.createElement('table');
+
+                // Create table header
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['ID', 'Method', 'Endpoint', 'Requests'].forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                // Create and append rows for each detail
+                data.system_details.forEach(detail => {
+                    const tr = document.createElement('tr');
+                    [detail.id, detail.method, detail.endpoint, detail.requests].forEach(item => {
+                        const td = document.createElement('td');
+                        td.textContent = item;
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+
+                systemDetailsContainer.appendChild(table);
+            } else {
+                console.error('Failed to get system details');
+            }
+        });
+}
 
 // Event listener for the logout button
 document.getElementById('logoutButton').addEventListener('click', function () {
@@ -155,3 +193,8 @@ document.getElementById('logoutButton').addEventListener('click', function () {
         });
     window.location.href = 'index.html';
 });
+
+window.onload = () => {
+    displayUsers();
+    displaySystemDetails();
+};
