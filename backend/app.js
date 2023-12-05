@@ -215,19 +215,20 @@ app.get('/model', verifyToken, async (req, res) => {
         res.status(429).send(messageString.modelRunningMessage);
         return;
     }
+
+
     let apiCount = 0;
     if (req.user.role == 'admin'){
         apiCount = 0;
     }else{
-        apiCount = checkApiCount(req.body.username);
+        apiCount = checkApiCount(req.user.username);
     }
     if (apiCount > 20) {
         res.status(403).send(messageString.APILimitReached);
         return
     }
     else {
-        console.log('incrementing api count');
-        incrementApiCount(req.body.username);
+        incrementApiCount(req.user.username);
     }
 
     isModelRunning = true;
