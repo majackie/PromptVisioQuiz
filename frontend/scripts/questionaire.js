@@ -28,13 +28,13 @@ function displayApiCount() {
         credentials: 'include',
     }).then(response => response.json())
         .then(data => {
-            if (data.success) {
+
                 // Get the API count element
                 const apiCountElement = document.getElementById('apiCount');
                 console.log(data.count)
                 // Set the API count
                 apiCountElement.textContent = data.count;
-            }
+            
         });
 }
     
