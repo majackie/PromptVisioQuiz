@@ -13,14 +13,11 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const messageString = require('./userMessageStrings.json');
+const userMessageStrings = require('./userMessageStrings.json');
 
 const secretKey = 'your_secret_key';
 // Flag to check if model is running
 let isModelRunning = false;
-
-const userMessageStrings = require('./userMessageStrings.json');
-
-
 
 // Set up PostgreSQL connection
 const pool = new pg.Pool({
@@ -49,8 +46,6 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
-
-
 
 app.use(express.json());
 app.use(cookieParser());
@@ -216,7 +211,6 @@ app.get('/model', verifyToken, async (req, res) => {
         return;
     }
 
-
     // let apiCount = 0;
     // if (req.user.role == 'admin'){
     //     apiCount = 0;
@@ -304,7 +298,6 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         // incrementApiCount(req.body.username);
     // }
     
-
     const fileName = 'titles.json';
     // Send the file
     res.sendFile(fileName, options, function (err) {
@@ -417,13 +410,22 @@ app.post('/register', async (req, res) => {
             res.json({ success: false });
         } else {
             // If the username doesn't exist, create a new user
-            pool.query('INSERT INTO user_accounts (username, password, role) VALUES ($1, crypt($2, gen_salt(\'bf\')), $3)', [username, password, role], (err, result) => {
+            pool.query('INSERT INTO user_accounts (username, password, role) VALUES ($1, crypt($2, gen_salt(\'bf\')), $3) RETURNING id', [username, password, role], (err, result) => {
                 if (err) {
                     console.error(err);
                     res.status(500).json({ success: false });
                 } else {
-                    // If the user is created successfully, send success
-                    res.json({ success: true });
+                    // If the user is created successfully, create a corresponding entry in user_details
+                    const userId = result.rows[0].id;
+                    pool.query('INSERT INTO user_details (user_id) VALUES ($1)', [userId], (err, result) => {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).json({ success: false });
+                        } else {
+                            // If the user details are created successfully, send success
+                            res.json({ success: true });
+                        }
+                    });
                 }
             });
         }
