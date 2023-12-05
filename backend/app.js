@@ -228,7 +228,7 @@ app.get('/model', verifyToken, async (req, res) => {
     //     return
     // }
     // else {
-    //     incrementApiCount(req.user.username);
+        incrementApiCount(req.user.username);
     // }
 
     isModelRunning = true;
@@ -301,7 +301,7 @@ app.get('/titles', verifyToken, async (req, res, next) => {
     // }
     // else {
     //     console.log(messageString.incrementApiCount);
-        incrementApiCount(req.body.username);
+        // incrementApiCount(req.body.username);
     // }
     
 
