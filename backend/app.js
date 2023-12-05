@@ -162,7 +162,7 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
 });
 
 app.get('/apiCount', verifyToken, async (req, res) => {
-    await incrementSystemDetails(req.route.path);
+    // await incrementSystemDetails(req.route.path);
 
     // Get the api_count value from the database
     const client = await pool.connect();
