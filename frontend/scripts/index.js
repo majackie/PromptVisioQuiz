@@ -1,8 +1,9 @@
 // ChatGPT-3.5 (https://chat.openai.com/) was used to code solutions presented in this assignment
 
 // Base URL for the API
-const url = 'https://promptvisioquizbackend.onrender.com';
-// const url = 'http://localhost:3000';
+// const url = 'https://promptvisioquizbackend.onrender.com';
+const url = 'http://localhost:3000';
+let myJsonData;
 
 // Check if the user is already logged in
 fetch(url + '/isLoggedIn', {
@@ -18,6 +19,20 @@ fetch(url + '/isLoggedIn', {
         }
     });
 
+    fetch(url + '/jsonContent')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        myJsonData = data;
+        // Use the data as needed in your frontend
+      })
+      .catch(error => {
+        console.error(error);
+      });
 // Add an event listener for the login form submission
 document.getElementById('loginForm').addEventListener('submit', function (event) {
     // Prevent the form from being submitted normally
@@ -39,7 +54,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         .then(response => {
             // If the response was not ok, throw an error
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(myJsonData.loginFethErrorMessage);
             }
 
             return response.json();
@@ -64,7 +79,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
                 }
             } else {
                 // Display an error message
-                alert('Login failed. Please check your credentials.');
+                alert(myJsonData.loginFailedErrorMessage);
             }
         })
         .catch(error => {

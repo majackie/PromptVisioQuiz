@@ -3,6 +3,7 @@
 // Base URL for the API
 const url = 'https://promptvisioquizbackend.onrender.com';
 // const url = 'http://localhost:3000';
+let myJsonData;
 
 // Check if the user is already logged in
 fetch(url + '/admin', {
@@ -21,6 +22,21 @@ fetch(url + '/admin', {
             window.location.href = 'index.html';
         }
     });
+
+fetch(url + '/jsonContent')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        myJsonData = data;
+        // Use the data as needed in your frontend
+      })
+      .catch(error => {
+        console.error(error);
+      });
 
 // Set the button click event for navigating to the questionaire page
 document.querySelector('#goToQuestionaireButton').onclick = () => window.location.href = 'questionaire.html';
@@ -69,7 +85,7 @@ function displayUsers() {
 
                 userContainer.appendChild(table);
             } else {
-                console.error('Failed to get user_accounts');
+                console.error(myJsonData.failedToGetUsersMessage);
             }
         });
 }
@@ -90,12 +106,12 @@ document.getElementById('deleteUserForm').addEventListener('submit', function (e
     }).then(response => response.json())
         .then(data => {
             if (data.success) {
-                console.log('User deleted successfully');
+                console.log(myJsonData.userDeletedSuccessfully);
                 // Refresh the list of user_accounts after deletion
                 displayUsers();
                 displaySystemDetails();
             } else {
-                console.error('Failed to delete user');
+                console.error(myJsonData.userDeleteFailed);
             }
         });
 });
@@ -121,12 +137,12 @@ document.getElementById('updateUserRoleForm').addEventListener('submit', functio
     }).then(response => response.json())
         .then(data => {
             if (data.success) {
-                console.log('User role updated successfully');
+                console.log(myJsonData.userRoleUpdatedSuccessfully);
                 // Refresh the list of user_accounts after role update
                 displayUsers();
                 displaySystemDetails();
             } else {
-                console.error('Failed to update user role');
+                console.error(myJsonData.failedToUpdateUserRole);
             }
         });
 });
@@ -175,7 +191,7 @@ function displaySystemDetails() {
 
                 systemDetailsContainer.appendChild(table);
             } else {
-                console.error('Failed to get system details');
+                console.error(myJsonData.failedToGetSystemDetails);
             }
         });
 }

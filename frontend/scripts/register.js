@@ -3,6 +3,7 @@
 // Base URL for the API
 const url = 'https://promptvisioquizbackend.onrender.com';
 // const url = 'http://localhost:3000';
+let myJsonData;
 
 // Check if the user is already logged in
 fetch(url + '/isLoggedIn', {
@@ -16,6 +17,21 @@ fetch(url + '/isLoggedIn', {
         if (data.success) {
             window.location.href = 'questionaire.html';
         }
+    });
+
+fetch(url + '/jsonContent')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      myJsonData = data;
+      // Use the data as needed in your frontend
+    })
+    .catch(error => {
+      console.error(error);
     });
 
 // Event listener for the registration form submission
@@ -42,12 +58,12 @@ document.getElementById('registerForm').addEventListener('submit', function (eve
         .then(data => {
             if (data.success) {
                 // If the registration was successful, display a success message
-                messageElement.textContent = 'Registration successful!';
+                messageElement.textContent = myJsonData.successfulRegistrationMessage;
                 // And redirect to the login page
                 window.location.href = 'index.html';
             } else {
                 // If the registration failed, display an error message
-                messageElement.textContent = 'Registration failed.';
+                messageElement.textContent = myJsonData.failedRegistrationMessage;
             }
         });
 });

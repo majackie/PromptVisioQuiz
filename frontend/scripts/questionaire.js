@@ -3,6 +3,7 @@
 // Base URL for the API
 const url = 'https://promptvisioquizbackend.onrender.com';
 // const url = 'http://localhost:3000';
+let myJsonData
 
 // Check if the user is already logged in
 fetch(url + '/isLoggedIn', {
@@ -16,6 +17,21 @@ fetch(url + '/isLoggedIn', {
         if (!data.success) {
             window.location.href = 'index.html';
         }
+    });
+
+fetch(url + '/jsonContent')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      myJsonData = data;
+      // Use the data as needed in your frontend
+    })
+    .catch(error => {
+      console.error(error);
     });
 
 // Event listener for the generate button
@@ -125,7 +141,7 @@ document.getElementById('questionaireButton').addEventListener('click', function
                 } else {
                     // If no title is selected, set the result message to 'Please select a title.'
                     const resultMessage = document.getElementById('resultMessage');
-                    resultMessage.textContent = 'Please select a title.';
+                    resultMessage.textContent = myJsonData.pleaseSelectTitleMessage;
                 }
             });
         })
