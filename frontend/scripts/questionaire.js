@@ -174,9 +174,9 @@ document.getElementById('questionaireButton').addEventListener('click', function
         });
 });
 
-window.onload = function () {
-    displayApiCount();
-};
+// window.onload = function () {
+//     displayApiCount();
+// };
 
 // Event listener for the logout button
 document.getElementById('logoutButton').addEventListener('click', function () {
