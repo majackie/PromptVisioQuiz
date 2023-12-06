@@ -58,6 +58,8 @@ function displayApiCount() {
     
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
+    const modelResponse = document.getElementById('modelResponse');
+    modelResponse.textContent = 'Generating...';
     // Fetch the model from the API
     fetch(url + '/model', {
         method: 'GET',
@@ -69,10 +71,12 @@ document.getElementById('generateButton').addEventListener('click', function () 
         .then(response => response.text())
         .then(message => {
             // Log the response message
+            modelResponse.textContent = message;
             console.log(message);
         })
         .catch(error => {
             // Log any errors
+            modelResponse.textContent = 'Error: ' + error;
             console.error('Error:', error);
         });
 });
