@@ -168,8 +168,6 @@ app.delete('/admin/user_accounts/:userId', verifyToken, async (req, res) => {
 
 app.get('/apiCount', verifyToken, async (req, res) => {
     try {
-        // Get the api_count value from the database
-
         // Using template string for the SQL query
         const sql = `
             SELECT user_details.api_count
@@ -444,7 +442,6 @@ app.get('/admin/system_details', async (req, res) => {
 });
 
 function checkApiCount(username) {
-    const client = pool.connect();
 
     try {
         // Using template string for the SQL query
@@ -456,7 +453,7 @@ function checkApiCount(username) {
         `;
 
         // Execute the query
-        const result = client.query(sql, [username]);
+        const result = pool.query(sql, [username]);
 
         // Return the api_count value
         return result.rows[0].api_count;
@@ -464,14 +461,10 @@ function checkApiCount(username) {
         // Handle errors
         console.error(messageString.executingQueryError, error.message);
         throw error;
-    } finally {
-        // Release the client back to the pool
-        client.release();
     }
-}
+} 
 
 async function incrementApiCount(username) {
-    const client = await pool.connect();
 
     try {
         // Increment the api_count by 1
@@ -491,11 +484,7 @@ async function incrementApiCount(username) {
         // Handle errors
         console.error(messageString.executingUpdateQueryError, error.message);
         throw error;
-    } finally {
-        // Release the client back to the pool
-        client.release();
-    }
-}
+    } }
 
 async function incrementSystemDetails(endpoint) {
     try {
