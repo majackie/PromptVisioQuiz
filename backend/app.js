@@ -293,7 +293,8 @@ app.get('/titles', verifyToken, async (req, res, next) => {
     // }
     // else {
     //     console.log(messageString.incrementApiCount);
-        // incrementApiCount(req.body.username);
+    
+
     // }
     
     const fileName = 'titles.json';
@@ -467,26 +468,31 @@ function checkApiCount(username) {
 } 
 
 async function incrementApiCount(username) {
-
+    const client = await pool.connect();
     try {
+        
         // Increment the api_count by 1
         const updateSql = `
         UPDATE user_details
         SET api_count = api_count + 1
         FROM user_accounts
-        WHERE user_details.id = user_accounts.id
-          AND user_accounts.username = $1;
+        WHERE user_details.user_id = user_accounts.id
+        AND user_accounts.username = $1;
         `;
 
         // Execute the update query
-        const result = await client.query(updateSql, [username]);
+        await client.query(updateSql, [username]);
         // Return the updated api_count value
         return;
     } catch (error) {
         // Handle errors
         console.error(messageString.executingUpdateQueryError, error.message);
         throw error;
-    } }
+    }
+    finally {
+            client.release();
+        }
+ }
 
 async function incrementSystemDetails(endpoint) {
     try {
