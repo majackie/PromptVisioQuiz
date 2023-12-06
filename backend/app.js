@@ -207,19 +207,18 @@ app.get('/model', verifyToken, async (req, res) => {
         return;
     }
 
-    // let apiCount = 0;
-    // if (req.user.role == 'admin'){
-    //     apiCount = 0;
-    // }else{
-    //     apiCount = checkApiCount(req.user.username);
-    // }
-    // if (apiCount > 20) {
-    //     res.status(403).send(messageString.APILimitReached);
-    //     return
-    // }
-    // else {
-      await incrementApiCount(req.user.username);
-    // }
+    if (req.user.role !== 'admin') {
+        if (checkApiCount(req.user.username)) {
+            await incrementApiCount(req.user.username);
+        }
+        else{
+            res.status(403).send(messageString.APILimitReached);
+            return;
+        }
+    }
+
+      
+
 
     isModelRunning = true;
     console.log(messageString.startingModelMessage);
@@ -283,7 +282,6 @@ app.get('/titles', verifyToken, async (req, res, next) => {
         }
     };
 
-    // const apiCount = checkApiCount(req.body.username);
 
     // const apiCount = checkApiCount(req.body.username);
     // console.log(messageString.CheckingAPICount);
@@ -457,9 +455,15 @@ function checkApiCount(username) {
 
         // Execute the query
         const result = pool.query(sql, [username]);
+        const count = result.rows[0].api_count;
 
+        if (count > 20) {
+            return false;
+        }else{
+            return true;
+        }
         // Return the api_count value
-        return result.rows[0].api_count;
+        
     } catch (error) {
         // Handle errors
         console.error(messageString.executingQueryError, error.message);
