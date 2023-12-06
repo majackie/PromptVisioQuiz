@@ -211,6 +211,7 @@ app.get('/model', verifyToken, async (req, res) => {
         const apiLimit = await checkApiCount(req.user.username);
         if (!apiLimit){
             res.status(403).send(messageString.APILimitReached);
+            return;
         }
         
     }
@@ -443,7 +444,7 @@ app.get('/admin/system_details', async (req, res) => {
 async function checkApiCount(username) {
 
     try {
-        const client = pool.connect();
+        const client = await pool.connect();
         // Using template string for the SQL query
         const sql = `
         SELECT ud.api_count
@@ -457,11 +458,7 @@ async function checkApiCount(username) {
         const count = result.rows[0].api_count;
         client.release();
 
-        if (count > 20) {
-            return false;
-        }else{
-            return true;
-        }
+        return count < 20;
         // Return the api_count value
         
     } catch (error) {
