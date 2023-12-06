@@ -186,7 +186,7 @@ app.get('/apiCount', verifyToken, async (req, res) => {
         if (result.rows.length > 0) {
             const count = result.rows[0].api_count;
             // Return the api_count value
-            res.send({ count: count });
+            res.json({ success: true, count: count });
         } else {
             // Handle the case when no rows are returned (username not found)
             res.status(404).send({ error: 'Username not found' });
@@ -194,9 +194,6 @@ app.get('/apiCount', verifyToken, async (req, res) => {
     } catch (error) {
         console.error('Error in /apiCount route:', error);
         res.status(500).send('Internal Server Error');
-    } finally {
-        // Ensure to release the client back to the pool
-        client.release();
     }
 });
 
