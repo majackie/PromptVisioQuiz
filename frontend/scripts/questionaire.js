@@ -79,6 +79,7 @@ document.getElementById('generateButton').addEventListener('click', function () 
 
 // Event listener for the questionnaire button
 document.getElementById('questionaireButton').addEventListener('click', function () {
+    displayApiCount();
     fetch(url + '/titles', {
         method: 'GET',
         headers: {
