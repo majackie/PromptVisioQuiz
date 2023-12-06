@@ -220,7 +220,7 @@ app.get('/model', verifyToken, async (req, res) => {
     //     return
     // }
     // else {
-        incrementApiCount(req.body.username);
+        incrementApiCount(req.user.username);
     // }
 
     isModelRunning = true;
