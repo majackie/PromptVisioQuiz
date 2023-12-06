@@ -178,7 +178,7 @@ app.get('/apiCount', verifyToken, async (req, res) => {
         `;
 
         // Execute the query
-        const result = client.query(sql, [req.user.username]);
+        const result = await client.query(sql, [req.user.username]);
 
         // Check if any rows were returned
         if (result.rows.length > 0) {
