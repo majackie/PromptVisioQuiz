@@ -191,6 +191,7 @@ app.get('/apiCount', verifyToken, async (req, res) => {
             // Handle the case when no rows are returned (username not found)
             res.status(404).send({ error: 'Username not found' });
         }
+        client.release();
     } catch (error) {
         console.error('Error in /apiCount route:', error);
         res.status(500).send('Internal Server Error');
@@ -367,7 +368,9 @@ app.post('/login', async (req, res) => {
             // If the password doesn't match, send failure
             res.status(401).json({ success: false });
         }
+    
     });
+    pool.release();
 });
 
 app.get('/logout', (req, res) => {
