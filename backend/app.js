@@ -208,7 +208,8 @@ app.get('/model', verifyToken, async (req, res) => {
     }
 
     if (req.user.role !== 'admin') {
-        if (!checkApiCount(req.user.username)) {
+        const apiLimit = await checkApiCount(req.user.username);
+        if (!apiLimit){
             res.status(403).send(messageString.APILimitReached);
         }
         
