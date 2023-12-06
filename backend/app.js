@@ -218,7 +218,7 @@ app.get('/model', verifyToken, async (req, res) => {
     //     return
     // }
     // else {
-        incrementApiCount(req.user.username);
+      await incrementApiCount(req.user.username);
     // }
 
     isModelRunning = true;
@@ -468,9 +468,9 @@ function checkApiCount(username) {
 } 
 
 async function incrementApiCount(username) {
-    const client = await pool.connect();
+    
     try {
-        
+        const client = await pool.connect();
         // Increment the api_count by 1
         const updateSql = `
         UPDATE user_details
@@ -483,15 +483,14 @@ async function incrementApiCount(username) {
         // Execute the update query
         await client.query(updateSql, [username]);
         // Return the updated api_count value
+        client.release();
         return;
     } catch (error) {
         // Handle errors
         console.error(messageString.executingUpdateQueryError, error.message);
         throw error;
     }
-    finally {
-            client.release();
-        }
+
  }
 
 async function incrementSystemDetails(endpoint) {
