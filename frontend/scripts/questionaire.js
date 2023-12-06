@@ -48,7 +48,7 @@ function displayApiCount() {
                 // Get the API count element
                 const apiCountElement = document.getElementById('apiCount');
                 // Set the API count
-                apiCountElement.textContent = "Current API Count: " + data.count;
+                apiCountElement.textContent = myJsonData.currentApiCountMessage + data.count;
             
         })
         .catch(error => {
@@ -59,7 +59,7 @@ function displayApiCount() {
 // Event listener for the generate button
 document.getElementById('generateButton').addEventListener('click', function () {
     const modelResponse = document.getElementById('modelResponse');
-    modelResponse.textContent = 'Generating...';
+    modelResponse.textContent = myJsonData.generatingMessage;
     // Fetch the model from the API
     fetch(url + '/model', {
         method: 'GET',

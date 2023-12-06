@@ -18,6 +18,8 @@
 "APILimitReached":"API limit reached, please try again later",
 "CheckingAPICount":"checking api count",
 "incrementAPICount":"incrementing api count",
+"generatingMessage": "Generating Model...",
+"currentApiCountMessage":"Current API Count: ",
 
 
 
