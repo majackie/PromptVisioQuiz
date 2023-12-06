@@ -210,7 +210,6 @@ app.get('/model', verifyToken, async (req, res) => {
     if (req.user.role !== 'admin') {
         if (!checkApiCount(req.user.username)) {
             res.status(403).send(messageString.APILimitReached);
-            return;
         }
         
     }
@@ -453,7 +452,7 @@ async function checkApiCount(username) {
         `;
 
         // Execute the query
-        const result = client.query(sql, [username]);
+        const result = await client.query(sql, [username]);
         const count = result.rows[0].api_count;
         client.release();
 
