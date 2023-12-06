@@ -440,20 +440,22 @@ app.get('/admin/system_details', async (req, res) => {
     }
 });
 
-function checkApiCount(username) {
+async function checkApiCount(username) {
 
     try {
+        const client = pool.connect();
         // Using template string for the SQL query
         const sql = `
-        SELECT user_details.api_count
-        FROM user_details
-        JOIN user_accounts ON user_details.id = user_accounts.id
-        WHERE user_accounts.username = $1;
+        SELECT ud.api_count
+        FROM user_accounts ua
+        JOIN user_details ud ON ua.id = ud.user_id
+        WHERE ua.username = $1;
         `;
 
         // Execute the query
-        const result = pool.query(sql, [username]);
+        const result = client.query(sql, [username]);
         const count = result.rows[0].api_count;
+        client.release();
 
         if (count > 20) {
             return false;
