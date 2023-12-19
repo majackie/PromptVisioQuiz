@@ -49,3 +49,8 @@ button {
     cursor: pointer;
     font-size: 16px;
 }
+
+#userIdToDelete, #userIdToUpdate {
+    width: 6em;
+    text-align: right;
+}
