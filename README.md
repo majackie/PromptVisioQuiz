@@ -2,7 +2,7 @@
 Interactive quiz generator using CBC articles and a model to generate images.
 
 ## Description
-Create a quiz using four random article titles from CBC RSS feed. It involves passing the first article title to a model to generate an image and then randomizing the article titles to create a questionnaire.
+Fetch four random article titles from CBC RSS feed to create questionnaire. Use first title to generate image with self-hosted machine learning model.
 
 ## Installation
 ### Node.js (Backend)
